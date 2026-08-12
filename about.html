@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Our Story — Chinar Clothing Store</title>
+<link rel="icon" href="assets/images/logo/chinar-logo-square.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<div id="top-marquee"></div>
+<header class="site-header" id="site-header" data-active="about"></header>
+
+<main>
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Our Story</span>
+      <h1>Rooted Like the Chinar</h1>
+      <p>A name borrowed from the chinar tree — broad-branched, generous with shade, and unmistakably graceful through every season.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container story">
+      <img id="aboutImg1" src="" alt="Chinar embroidery detail" />
+      <div class="story-copy">
+        <span class="eyebrow">Where It Started</span>
+        <h2 class="section-title">Craft, Not Just Clothing</h2>
+        <p>Chinar Clothing Store began with a simple belief: that everyday modestwear deserves the same craftsmanship as occasion wear. What started as a small collection of hand-embroidered unstitched suits has grown into a full wardrobe of pieces designed for women who want elegance without excess.</p>
+        <p>Every design carries a piece of heritage — floral motifs drawn from Mughal gardens, borders inspired by old shawls, and colorways chosen to flatter every skin tone.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="stat-strip">
+        <div><strong>38+</strong><span>Signature Designs</span></div>
+        <div><strong>15K+</strong><span>Happy Customers</span></div>
+        <div><strong>4.9★</strong><span>Average Rating</span></div>
+        <div><strong>3–6</strong><span>Day Delivery</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container story">
+      <div class="story-copy">
+        <span class="eyebrow">Our Promise</span>
+        <h2 class="section-title">Modest, Made Beautifully</h2>
+        <ul class="value-list">
+          <li id="valLeaf1"><div><h4>Ethically Made</h4><p>Worked with small artisan units across Punjab who are paid fairly for hand-embroidery.</p></div></li>
+          <li id="valLeaf2"><div><h4>Fabric First</h4><p>We test every fabric batch for colorfastness and hand-feel before it becomes a Chinar piece.</p></div></li>
+          <li id="valLeaf3"><div><h4>Designed for Modesty</h4><p>Necklines, sleeve lengths and silhouettes designed to pair effortlessly with a hijab.</p></div></li>
+        </ul>
+      </div>
+      <img id="aboutImg2" src="" alt="Chinar suit detail" />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="text-align:center;">
+      <span class="eyebrow">Stay Connected</span>
+      <h2 class="section-title">Follow Us</h2>
+      <p style="max-width:520px;margin:0 auto 22px;color:var(--ink-soft);">Follow along for new drops, styling ideas and behind-the-scenes from the workshop.</p>
+      <div class="social-row social-row--light" style="justify-content:center;margin-top:0;">
+        <a href="#" aria-label="Facebook" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 9h3V6h-3a4 4 0 0 0-4 4v2H7v3h3v6h3v-6h3l1-3h-4v-2a1 1 0 0 1 1-1Z"/></svg></a>
+        <a href="#" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg></a>
+        <a href="#" aria-label="TikTok" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3v9.5a3.5 3.5 0 1 1-3-3.46"/><path d="M13 3c.3 2.2 1.8 3.9 4 4.2"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="faq">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Good to Know</span>
+        <h2 class="section-title">Size Guide &amp; FAQs</h2>
+      </div>
+      <div class="wrap-narrow" style="padding:0;">
+        <div class="detail-accordion" id="faqAccordion" style="border-top:1px solid var(--line);"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" id="site-footer"></footer>
+<div id="cart-drawer-mount"></div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/products-data.js"></script>
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/partials.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  document.getElementById('valLeaf1').insertAdjacentHTML('afterbegin', ICONS.shield);
+  document.getElementById('valLeaf2').insertAdjacentHTML('afterbegin', ICONS.leaf);
+  document.getElementById('valLeaf3').insertAdjacentHTML('afterbegin', ICONS.heart);
+
+  const faqs = [
+    { q: "What size should I order for Ready to Wear?", a: "Small fits bust 34–36in, Medium fits 36–38in, Large fits 38–40in. If you're between sizes, we recommend sizing up for a relaxed, modest fit." },
+    { q: "Can I get my unstitched suit stitched by Chinar?", a: "Yes — add stitching instructions in the order notes at checkout (bust, shirt length, sleeve style) and our tailoring partner will contact you. Stitching adds 5–7 business days." },
+    { q: "How long does delivery take?", a: "Orders are dispatched within 2–3 business days and delivered within 3–6 business days across Pakistan via our courier partners." },
+    { q: "What is your return / exchange policy?", a: "Ready-to-wear pieces can be exchanged within 7 days in original, unworn condition with tags attached. Unstitched fabric is cut-to-order and is final sale unless defective." },
+    { q: "Do you ship internationally?", a: "Currently we ship across Pakistan only. International shipping is coming soon — join our newsletter to be notified." },
+  ];
+  document.getElementById('faqAccordion').innerHTML = faqs.map((f, i) => `
+    <div class="accordion-item ${i === 0 ? 'open' : ''}">
+      <button>${f.q} <span>${ICONS.plus}</span></button>
+      <div class="accordion-body">${f.a}</div>
+    </div>`).join('');
+  document.querySelectorAll('.accordion-item button').forEach(btn => {
+    btn.addEventListener('click', () => btn.parentElement.classList.toggle('open'));
+  });
+
+  (async function () {
+    const products = await loadProducts();
+    document.getElementById('aboutImg1').src = products[10]?.images[0] || '';
+    document.getElementById('aboutImg2').src = products[25]?.images[1] || products[25]?.images[0] || '';
+  })();
+</script>
+</body>
+</html>

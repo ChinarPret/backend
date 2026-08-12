@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Your Bag — Chinar Clothing Store</title>
+<link rel="icon" href="assets/images/logo/chinar-logo-square.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<div id="top-marquee"></div>
+<header class="site-header" id="site-header" data-active="shop"></header>
+
+<main>
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Review Your Order</span>
+      <h1>Your Bag</h1>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div id="cartPageContent"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" id="site-footer"></footer>
+<div id="cart-drawer-mount"></div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/products-data.js"></script>
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/partials.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+(async function initCartPage() {
+  await loadProducts();
+
+  function render() {
+    const items = Cart.detailedItems();
+    const mount = document.getElementById('cartPageContent');
+    if (items.length === 0) {
+      mount.innerHTML = `
+        <div class="empty-state">
+          ${ICONS.bag}
+          <h3>Your bag is empty</h3>
+          <p class="lede center" style="margin:10px auto 24px;">Looks like you haven't added any pieces yet.</p>
+          <a href="shop.html" class="btn btn-primary">Continue Shopping</a>
+        </div>`;
+      return;
+    }
+    const subtotal = Cart.subtotal();
+    const shipping = subtotal >= 6000 ? 0 : 250;
+    mount.innerHTML = `
+      <div class="checkout-grid">
+        <div>
+          <table class="cart-table">
+            <thead><tr><th>Product</th><th>Price</th><th>Quantity</th><th>Total</th><th></th></tr></thead>
+            <tbody>
+              ${items.map(i => `
+                <tr>
+                  <td>
+                    <div class="prod-cell">
+                      <img src="${i.product.images[0]}" alt="${i.product.name}" />
+                      <div>
+                        <h4 style="margin:0 0 4px;font-family:var(--font-body);font-weight:600;">${i.product.name}</h4>
+                        <div style="font-size:.8rem;color:var(--ink-soft);">${i.size}</div>
+                        <div style="font-size:.8rem;color:var(--ink-soft);">${i.product.color}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>${formatPrice(i.unitPrice)}</td>
+                  <td>
+                    <div class="mini-stepper">
+                      <button onclick="Cart.updateQty(${i.id}, '${i.size}', ${i.qty - 1})">−</button>
+                      <span>${i.qty}</span>
+                      <button onclick="Cart.updateQty(${i.id}, '${i.size}', ${i.qty + 1})">+</button>
+                    </div>
+                  </td>
+                  <td>${formatPrice(i.lineTotal)}</td>
+                  <td><button class="cart-item-remove" onclick="Cart.remove(${i.id}, '${i.size}')">Remove</button></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+          <a href="shop.html" class="btn btn-outline btn-sm" style="margin-top:24px;">← Continue Shopping</a>
+        </div>
+        <aside class="order-summary">
+          <h3 style="margin-bottom:18px;">Order Summary</h3>
+          <div class="row"><span>Subtotal</span><span>${formatPrice(subtotal)}</span></div>
+          <div class="row"><span>Shipping</span><span>${shipping === 0 ? 'Free' : formatPrice(shipping)}</span></div>
+          <div class="row total"><span>Total</span><strong>${formatPrice(subtotal + shipping)}</strong></div>
+          <a href="checkout.html" class="btn btn-primary btn-block" style="margin-top:18px;">Proceed to Checkout</a>
+        </aside>
+      </div>`;
+  }
+
+  render();
+  document.addEventListener('cart:updated', render);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Order Confirmed — Chinar Clothing Store</title>
+<link rel="icon" href="assets/images/logo/chinar-logo-square.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<div id="top-marquee"></div>
+<header class="site-header" id="site-header" data-active=""></header>
+
+<main>
+  <section class="section" style="padding-top:90px;padding-bottom:100px;">
+    <div class="wrap-narrow center">
+      <div style="width:70px;height:70px;border-radius:50%;background:var(--sage-100);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;color:var(--chinar-green-dark);">
+        <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <span class="eyebrow">Thank You</span>
+      <h1 class="section-title">Your Order is Confirmed</h1>
+      <p class="lede" style="margin:14px auto 6px;">Order <strong id="orderIdText">CHN-000000</strong> has been placed successfully. A confirmation will be sent to your email/phone shortly.</p>
+      <p class="lede" style="margin:0 auto 34px;">Our artisans are preparing your pieces with care — expect delivery within 3–6 business days.</p>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+        <a href="shop.html" class="btn btn-primary">Continue Shopping</a>
+        <a href="index.html" class="btn btn-outline">Back to Home</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" id="site-footer"></footer>
+<div id="cart-drawer-mount"></div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/products-data.js"></script>
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/partials.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  const id = new URLSearchParams(location.search).get('id');
+  if (id) document.getElementById('orderIdText').textContent = id;
+</script>
+</body>
+</html>

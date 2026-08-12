@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contact Us — Chinar Clothing Store</title>
+<link rel="icon" href="assets/images/logo/chinar-logo-square.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<div id="top-marquee"></div>
+<header class="site-header" id="site-header" data-active="contact"></header>
+
+<main>
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow">We'd Love to Hear From You</span>
+      <h1>Contact Us</h1>
+      <p>Questions about sizing, an order, or a custom stitching request — reach out any time.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container contact-grid">
+      <div>
+        <h3 style="margin-bottom:20px;">Send a Message</h3>
+        <form id="contactForm">
+          <input type="hidden" name="access_key" value="5f1fc1ef-0441-467a-a17d-fa39f0ee1e44" />
+          <input type="hidden" name="subject" value="New message from Chinar Clothing Store website" />
+          <div class="form-grid">
+            <div class="form-field"><label>Name</label><input name="name" required placeholder="Your name" /></div>
+            <div class="form-field"><label>Email</label><input name="email" required type="email" placeholder="you@example.com" /></div>
+          </div>
+          <div class="form-field"><label>Subject</label><input name="topic" placeholder="Order inquiry, stitching request..." /></div>
+          <div class="form-field"><label>Message</label><textarea name="message" rows="5" required placeholder="Tell us how we can help..."></textarea></div>
+          <button type="submit" class="btn btn-primary" id="contactSubmitBtn">Send Message</button>
+        </form>
+      </div>
+      <div>
+        <h3 style="margin-bottom:20px;">Get in Touch</h3>
+        <ul class="contact-info">
+          <li id="ciPin"><div><h4>Store Address</h4><p>Chinar House, Misq ul mall, Faisalabad, Pakistan</p></div></li>
+          <li id="ciPhone"><div><h4>Phone / WhatsApp</h4><p>+92 3239898913</p></div></li>
+          <li id="ciMail"><div><h4>Email</h4><p>chinarclothing8@gmail.com</p></div></li>
+          <li id="ciHours"><div><h4>Hours</h4><p>Mon – Sat, 11:00 AM – 8:00 PM PKT</p></div></li>
+        </ul>
+        <div style="margin-top:30px;border-radius:8px;overflow:hidden;box-shadow:var(--shadow-card);">
+          <img src="assets/images/logo/chinar-logo.png" alt="Chinar" style="width:100%;background:var(--sage-50);padding:40px 0;" />
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" id="site-footer"></footer>
+<div id="cart-drawer-mount"></div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/products-data.js"></script>
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/partials.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  document.addEventListener('partials:ready', () => {
+    document.getElementById('ciPin').insertAdjacentHTML('afterbegin', ICONS.pin);
+    document.getElementById('ciPhone').insertAdjacentHTML('afterbegin', ICONS.phone);
+    document.getElementById('ciMail').insertAdjacentHTML('afterbegin', ICONS.mail);
+    document.getElementById('ciHours').insertAdjacentHTML('afterbegin', ICONS.truck);
+  });
+  document.getElementById('contactForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const btn = document.getElementById('contactSubmitBtn');
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: new FormData(form),
+      });
+      const result = await res.json();
+      if (result.success) {
+        showToast("Message sent! We'll reply within 24 hours.");
+        form.reset();
+      } else {
+        showToast("Couldn't send your message. Please try again or email us directly.");
+      }
+    } catch (err) {
+      showToast("Couldn't send your message. Please check your connection and try again.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }
+  });
+</script>
+</body>
+</html>

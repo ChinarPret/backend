@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Checkout — Chinar Clothing Store</title>
+<link rel="icon" href="assets/images/logo/chinar-logo-square.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<div id="top-marquee"></div>
+<header class="site-header" id="site-header" data-active="shop"></header>
+
+<main>
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Almost There</span>
+      <h1>Checkout</h1>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container" id="checkoutMount"></div>
+  </section>
+</main>
+
+<footer class="site-footer" id="site-footer"></footer>
+<div id="cart-drawer-mount"></div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/products-data.js"></script>
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/partials.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+(async function initCheckout() {
+  await loadProducts();
+  const items = Cart.detailedItems();
+  const mount = document.getElementById('checkoutMount');
+
+  if (items.length === 0) {
+    mount.innerHTML = `
+      <div class="empty-state">
+        ${ICONS.bag}
+        <h3>Your bag is empty</h3>
+        <p class="lede center" style="margin:10px auto 24px;">Add something beautiful before checking out.</p>
+        <a href="shop.html" class="btn btn-primary">Shop the Collection</a>
+      </div>`;
+    return;
+  }
+
+  const subtotal = Cart.subtotal();
+  const shipping = subtotal >= 6000 ? 0 : 250;
+  const total = subtotal + shipping;
+
+  mount.innerHTML = `
+    <form class="checkout-grid" id="checkoutForm">
+      <div>
+        <h3 style="margin-bottom:18px;">Shipping Details</h3>
+        <div class="form-grid">
+          <div class="form-field"><label>Full Name</label><input required name="fullName" placeholder="Ayesha Khan" /></div>
+          <div class="form-field"><label>Phone Number</label><input required name="phone" placeholder="03XX XXXXXXX" /></div>
+        </div>
+        <div class="form-field"><label>Email Address</label><input required type="email" name="email" placeholder="you@example.com" /></div>
+        <div class="form-field"><label>Street Address</label><input required name="address" placeholder="House #, Street, Area" /></div>
+        <div class="form-grid">
+          <div class="form-field"><label>City</label><input required name="city" placeholder="Lahore" /></div>
+          <div class="form-field">
+            <label>Province</label>
+            <select name="province">
+              <option>Punjab</option><option>Sindh</option><option>Khyber Pakhtunkhwa</option>
+              <option>Balochistan</option><option>Gilgit-Baltistan</option><option>Islamabad Capital Territory</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-field"><label>Order Notes (optional) — e.g. stitching instructions</label><textarea name="notes" rows="3" placeholder="Stitch shirt to size Medium, sleeves 3/4..."></textarea></div>
+
+        <h3 style="margin:30px 0 6px;">Payment Method</h3>
+        <div class="pay-options" id="payOptions">
+          <label class="pay-opt selected"><input type="radio" name="payment" value="cod" checked />${ICONS.cashIcon}<div><div class="pay-name">Cash on Delivery</div><div class="pay-desc">Pay when your order arrives at your doorstep.</div></div></label>
+          <label class="pay-opt"><input type="radio" name="payment" value="bank" />${ICONS.bankIcon}<div><div class="pay-name">Bank Transfer</div><div class="pay-desc">Transfer to our account; details sent after order.</div></div></label>
+          <label class="pay-opt"><input type="radio" name="payment" value="card" />${ICONS.cardIcon}<div><div class="pay-name">Credit / Debit Card</div><div class="pay-desc">Secure payment via card (demo checkout).</div></div></label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top:10px;">Place Order — ${formatPrice(total)}</button>
+      </div>
+
+      <aside class="order-summary">
+        <h3 style="margin-bottom:18px;">Order Summary</h3>
+        ${items.map(i => `
+          <div class="mini-cart-row">
+            <img src="${i.product.images[0]}" alt="${i.product.name}" />
+            <div style="flex:1;">
+              <div style="font-size:.88rem;font-weight:600;">${i.product.name} <span class="qty-badge">${i.qty}</span></div>
+              <div style="font-size:.76rem;color:var(--ink-soft);">${i.size}</div>
+            </div>
+            <div style="font-size:.88rem;">${formatPrice(i.lineTotal)}</div>
+          </div>`).join('')}
+        <div class="promo-row">
+          <input type="text" placeholder="Promo code" id="promoInput" />
+          <button type="button" class="btn btn-outline btn-sm" id="promoBtn">Apply</button>
+        </div>
+        <div class="row"><span>Subtotal</span><span>${formatPrice(subtotal)}</span></div>
+        <div class="row"><span>Shipping</span><span>${shipping === 0 ? 'Free' : formatPrice(shipping)}</span></div>
+        <div class="row total"><span>Total</span><strong>${formatPrice(total)}</strong></div>
+      </aside>
+    </form>`;
+
+  document.querySelectorAll('.pay-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.pay-opt').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      opt.querySelector('input').checked = true;
+    });
+  });
+
+  document.getElementById('promoBtn').addEventListener('click', () => {
+    const code = document.getElementById('promoInput').value.trim().toUpperCase();
+    if (code === 'CHINAR10') {
+      showToast('Promo applied! 10% off will be confirmed via email.');
+    } else if (code) {
+      showToast('Invalid promo code');
+    }
+  });
+
+  document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const order = {
+      customer: Object.fromEntries(fd.entries()),
+      items: items.map(i => ({ id: i.id, name: i.product.name, size: i.size, qty: i.qty, unitPrice: i.unitPrice })),
+      subtotal, shipping, total,
+      placedAt: new Date().toISOString(),
+    };
+
+    let orderId = 'CHN-' + Math.floor(100000 + Math.random() * 900000);
+    try {
+      const res = await fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(order),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        orderId = data.orderId || orderId;
+      }
+    } catch (err) {
+      /* backend not running - proceed with client-side order id */
+    }
+
+    localStorage.setItem('chinar_last_order', JSON.stringify({ ...order, orderId }));
+    Cart.clear();
+    location.href = `order-success.html?id=${orderId}`;
+  });
+})();
+</script>
+</body>
+</html>

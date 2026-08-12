@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title id="pageTitleTag">Product — Chinar Clothing Store</title>
+<link rel="icon" href="assets/images/logo/chinar-logo-square.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<div id="top-marquee"></div>
+<header class="site-header" id="site-header" data-active="shop"></header>
+
+<main>
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="index.html">Home</a><span>/</span><a href="shop.html">Shop</a><span>/</span><span id="crumbName">Product</span>
+    </nav>
+  </div>
+
+  <div class="container" id="pdpMount">
+    <!-- filled by JS -->
+  </div>
+
+  <div class="container">
+    <h2 class="section-title related-title">You May Also Like</h2>
+    <div class="product-grid" id="relatedGrid" style="margin-bottom:80px;"></div>
+  </div>
+</main>
+
+<footer class="site-footer" id="site-footer"></footer>
+<div id="cart-drawer-mount"></div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/products-data.js"></script>
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/partials.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+(async function initPDP() {
+  const products = await loadProducts();
+  const params = new URLSearchParams(location.search);
+  const slug = params.get('slug');
+  const product = products.find(p => p.slug === slug) || products[0];
+  let activeImg = 0;
+  let selectedSize = product.sizes[0];
+  let qty = 1;
+
+  document.getElementById('pageTitleTag').textContent = `${product.name} — Chinar Clothing Store`;
+  document.getElementById('crumbName').textContent = product.name;
+
+  const pct = discountPercent(product);
+
+  document.getElementById('pdpMount').innerHTML = `
+    <div class="pdp">
+      <div class="pdp-thumbs" id="pdpThumbs"></div>
+      <div class="pdp-main">
+        <div class="pdp-main-media">
+          <img id="pdpMainImg" src="${product.images[0]}" alt="${product.name}" />
+          ${product.images.length > 1 ? `
+            <button class="pdp-nav-btn prev" id="pdpPrev">${ICONS.chevronL}</button>
+            <button class="pdp-nav-btn next" id="pdpNext">${ICONS.chevronR}</button>
+            <span class="pdp-clip-count" id="pdpClipCount">1 / ${product.images.length}</span>` : ''}
+        </div>
+      </div>
+      <div class="pdp-side">
+        <span class="p-collection">${product.collection}</span>
+        <h1>${product.name}</h1>
+        <div class="p-sku">${product.fabric}</div>
+        <div class="pdp-price-row">
+          <span class="price">${formatPrice(product.sale_price || product.price)}</span>
+          ${product.sale_price ? `<span class="price-old">${formatPrice(product.price)}</span><span class="price-off">Save ${pct}%</span>` : ''}
+        </div>
+        <span class="pdp-stock">
+          <span class="dot ${product.in_stock ? 'in' : 'out'}"></span>
+          ${product.in_stock ? 'In Stock — Ready to Ship' : 'Currently Sold Out'}
+        </span>
+        <p class="pdp-desc">${product.long_description}</p>
+
+        <div class="size-label"><span>Select Option</span><a href="about.html#faq">Size Guide</a></div>
+        <div class="size-options" id="sizeOptions"></div>
+
+        <div class="qty-row">
+          <div class="qty-stepper">
+            <button id="qtyMinus">−</button><span id="qtyVal">1</span><button id="qtyPlus">+</button>
+          </div>
+          <span class="lede" style="font-size:.82rem;">Only a few pieces left per design</span>
+        </div>
+
+        <div class="pdp-actions">
+          <button class="btn btn-primary" id="addToCartBtn" style="flex:1;" ${!product.in_stock ? 'disabled' : ''}>${product.in_stock ? 'Add to Bag' : 'Sold Out'}</button>
+          <button class="wish-btn" id="pdpWishBtn" style="position:static; width:48px; height:48px; border:1px solid var(--line);">${ICONS.heart}</button>
+        </div>
+
+        <ul class="pdp-trust">
+          <li>${ICONS.truck} Free delivery across Pakistan on orders over Rs. 6,000</li>
+          <li>${ICONS.shield} 100% authentic hand-embroidery, quality checked</li>
+          <li>${ICONS.refresh} 7-day easy exchange on all ready-to-wear pieces</li>
+        </ul>
+
+        <div class="detail-accordion">
+          <div class="accordion-item open">
+            <button>Fabric &amp; Care <span>${ICONS.plus}</span></button>
+            <div class="accordion-body">${product.fabric}. Hand-wash cold or dry clean recommended to preserve embroidery. Do not bleach. Iron on reverse at low heat.</div>
+          </div>
+          <div class="accordion-item">
+            <button>What's Included <span>${ICONS.plus}</span></button>
+            <div class="accordion-body">Ready-to-wear stitched shirt &amp; trouser with a matching dupatta, available in Small, Medium and Large. True to size — see our size guide for exact measurements.</div>
+          </div>
+          <div class="accordion-item">
+            <button>Shipping &amp; Returns <span>${ICONS.plus}</span></button>
+            <div class="accordion-body">Orders ship within 2–3 business days. Delivery in 3–6 days nationwide. This piece can be exchanged within 7 days in original, unworn condition with tags attached.</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  function renderThumbs() {
+    document.getElementById('pdpThumbs').innerHTML = product.images.map((img, i) => `
+      <div class="pdp-thumb ${i === activeImg ? 'active' : ''}" data-i="${i}">
+        <img src="${img}" alt="${product.name} clip ${i+1}" />
+      </div>`).join('');
+    document.querySelectorAll('.pdp-thumb').forEach(el => el.addEventListener('click', () => {
+      activeImg = Number(el.dataset.i);
+      updateMainImg();
+    }));
+  }
+  function updateMainImg() {
+    document.getElementById('pdpMainImg').src = product.images[activeImg];
+    document.querySelectorAll('.pdp-thumb').forEach((el, i) => el.classList.toggle('active', i === activeImg));
+    const counter = document.getElementById('pdpClipCount');
+    if (counter) counter.textContent = `${activeImg + 1} / ${product.images.length}`;
+  }
+  renderThumbs();
+  document.getElementById('pdpPrev')?.addEventListener('click', () => { activeImg = (activeImg - 1 + product.images.length) % product.images.length; updateMainImg(); });
+  document.getElementById('pdpNext')?.addEventListener('click', () => { activeImg = (activeImg + 1) % product.images.length; updateMainImg(); });
+
+  // sizes
+  document.getElementById('sizeOptions').innerHTML = product.sizes.map(s => `<button class="size-opt ${s === selectedSize ? 'active' : ''}" data-size="${s}">${s}</button>`).join('');
+  document.querySelectorAll('.size-opt').forEach(btn => btn.addEventListener('click', () => {
+    selectedSize = btn.dataset.size;
+    document.querySelectorAll('.size-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }));
+
+  // qty
+  document.getElementById('qtyMinus').addEventListener('click', () => { qty = Math.max(1, qty - 1); document.getElementById('qtyVal').textContent = qty; });
+  document.getElementById('qtyPlus').addEventListener('click', () => { qty = Math.min(10, qty + 1); document.getElementById('qtyVal').textContent = qty; });
+
+  // add to cart
+  document.getElementById('addToCartBtn').addEventListener('click', () => {
+    Cart.add(product.id, selectedSize, qty);
+    showToast(`${product.name} added to bag`);
+    openCart();
+  });
+
+  // wishlist
+  const wishBtn = document.getElementById('pdpWishBtn');
+  if (Cart.wishHas(product.id)) wishBtn.classList.add('active');
+  wishBtn.addEventListener('click', () => {
+    const active = Cart.wishToggle(product.id);
+    wishBtn.classList.toggle('active', active);
+    showToast(active ? 'Saved to wishlist' : 'Removed from wishlist');
+  });
+
+  // accordion
+  document.querySelectorAll('.accordion-item button').forEach(btn => {
+    btn.addEventListener('click', () => btn.parentElement.classList.toggle('open'));
+  });
+
+  // related
+  const related = products.filter(p => p.id !== product.id && (p.category === product.category)).slice(0, 4);
+  document.getElementById('relatedGrid').innerHTML = related.map(productCardHTML).join('');
+})();
+</script>
+</body>
+</html>

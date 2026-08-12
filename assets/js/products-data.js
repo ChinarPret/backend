@@ -1,0 +1,1030 @@
+/* Chinar catalog data.
+   This mirrors backend/products.json. If you run the Flask backend,
+   main.js will try /api/products first and fall back to this. */
+const CHINAR_PRODUCTS_STATIC = [
+  {
+    "id": 1,
+    "slug": "p01",
+    "name": "CHN-P01 \u2014 Peach & Rose Gold",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Chiffon",
+    "color": "Peach & Rose Gold",
+    "description": "Heavy hand-embroidered dupatta border on soft peach base.",
+    "long_description": "Heavy hand-embroidered dupatta border on soft peach base. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 7500,
+    "sale_price": 6000,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "New Arrival",
+    "images": [
+      "assets/images/products/p01/clip-1.jpg",
+      "assets/images/products/p01/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p01/clip-1-thumb.jpg",
+    "sku": "CHN-P01"
+  },
+  {
+    "id": 2,
+    "slug": "p02",
+    "name": "CHN-P02 \u2014 Emerald Paisley",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Luxury Pret Silk",
+    "color": "Emerald Paisley",
+    "description": "Classic paisley swirls on a rich emerald canvas.",
+    "long_description": "Classic paisley swirls on a rich emerald canvas. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 7500,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": false,
+    "badge": "Bestseller",
+    "images": [
+      "assets/images/products/p02/clip-1.jpg",
+      "assets/images/products/p02/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p02/clip-1-thumb.jpg",
+    "sku": "CHN-P02"
+  },
+  {
+    "id": 3,
+    "slug": "p03",
+    "name": "CHN-P03 \u2014 Midnight Floral",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Chiffon",
+    "color": "Midnight Floral",
+    "description": "Deep navy florals with fine gold outline embroidery.",
+    "long_description": "Deep navy florals with fine gold outline embroidery. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 6900,
+    "sale_price": 5175,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Sale",
+    "images": [
+      "assets/images/products/p03/clip-1.jpg",
+      "assets/images/products/p03/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p03/clip-1-thumb.jpg",
+    "sku": "CHN-P03"
+  },
+  {
+    "id": 4,
+    "slug": "p04",
+    "name": "CHN-P04 \u2014 Rose Petal Print",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Luxury Pret Silk",
+    "color": "Rose Petal Print",
+    "description": "Delicate floral border print in soft rose tones.",
+    "long_description": "Delicate floral border print in soft rose tones. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 8900,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": null,
+    "images": [
+      "assets/images/products/p04/clip-1.jpg"
+    ],
+    "thumb": "assets/images/products/p04/clip-1-thumb.jpg",
+    "sku": "CHN-P04"
+  },
+  {
+    "id": 5,
+    "slug": "p05",
+    "name": "CHN-P05 \u2014 Antique Mustard",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Lawn",
+    "color": "Antique Mustard",
+    "description": "Warm mustard fabric lifted with gold-thread motifs.",
+    "long_description": "Warm mustard fabric lifted with gold-thread motifs. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 12900,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": false,
+    "badge": "New Arrival",
+    "images": [
+      "assets/images/products/p05/clip-1.jpg",
+      "assets/images/products/p05/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p05/clip-1-thumb.jpg",
+    "sku": "CHN-P05"
+  },
+  {
+    "id": 6,
+    "slug": "p06",
+    "name": "CHN-P06 \u2014 Coral Blossom",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Karandi",
+    "color": "Coral Blossom",
+    "description": "Coral-peach hues with intricate floral embroidery patches.",
+    "long_description": "Coral-peach hues with intricate floral embroidery patches. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 10500,
+    "sale_price": 7875,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Bestseller",
+    "images": [
+      "assets/images/products/p06/clip-1.jpg",
+      "assets/images/products/p06/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p06/clip-1-thumb.jpg",
+    "sku": "CHN-P06"
+  },
+  {
+    "id": 7,
+    "slug": "p07",
+    "name": "CHN-P07 \u2014 Ivory Elegance",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Luxury Pret Silk",
+    "color": "Ivory Elegance",
+    "description": "Timeless ivory fabric finished with fine white-work embroidery.",
+    "long_description": "Timeless ivory fabric finished with fine white-work embroidery. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 11900,
+    "sale_price": 9520,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Limited Edition",
+    "images": [
+      "assets/images/products/p07/clip-1.jpg",
+      "assets/images/products/p07/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p07/clip-1-thumb.jpg",
+    "sku": "CHN-P07"
+  },
+  {
+    "id": 8,
+    "slug": "p08",
+    "name": "CHN-P08 \u2014 Teal Garden",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Cambric",
+    "color": "Teal Garden",
+    "description": "Lush teal florals inspired by Mughal garden motifs.",
+    "long_description": "Lush teal florals inspired by Mughal garden motifs. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 12900,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Bestseller",
+    "images": [
+      "assets/images/products/p08/clip-1.jpg",
+      "assets/images/products/p08/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p08/clip-1-thumb.jpg",
+    "sku": "CHN-P08"
+  },
+  {
+    "id": 9,
+    "slug": "p09",
+    "name": "CHN-P09 \u2014 Pearl Blossom",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Lawn",
+    "color": "Pearl Blossom",
+    "description": "Pearl-white base with soft pastel floral border.",
+    "long_description": "Pearl-white base with soft pastel floral border. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 10500,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Bestseller",
+    "images": [
+      "assets/images/products/p09/clip-1.jpg",
+      "assets/images/products/p09/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p09/clip-1-thumb.jpg",
+    "sku": "CHN-P09"
+  },
+  {
+    "id": 10,
+    "slug": "p10",
+    "name": "CHN-P10 \u2014 Dusty Mauve",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Chiffon",
+    "color": "Dusty Mauve",
+    "description": "Muted mauve tones with delicate embroidered neckline.",
+    "long_description": "Muted mauve tones with delicate embroidered neckline. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 9500,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": false,
+    "badge": "Bestseller",
+    "images": [
+      "assets/images/products/p10/clip-1.jpg",
+      "assets/images/products/p10/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p10/clip-1-thumb.jpg",
+    "sku": "CHN-P10"
+  },
+  {
+    "id": 11,
+    "slug": "p11",
+    "name": "CHN-P11 \u2014 Sunset Rust",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Karandi",
+    "color": "Sunset Rust",
+    "description": "Warm rust and amber shades with statement embroidery.",
+    "long_description": "Warm rust and amber shades with statement embroidery. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 9500,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "New Arrival",
+    "images": [
+      "assets/images/products/p11/clip-1.jpg",
+      "assets/images/products/p11/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p11/clip-1-thumb.jpg",
+    "sku": "CHN-P11"
+  },
+  {
+    "id": 12,
+    "slug": "p12",
+    "name": "CHN-P12 \u2014 Saffron Bloom",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Lawn",
+    "color": "Saffron Bloom",
+    "description": "Saffron-gold florals radiating warmth and light.",
+    "long_description": "Saffron-gold florals radiating warmth and light. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 10500,
+    "sale_price": 8400,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Sale",
+    "images": [
+      "assets/images/products/p12/clip-1.jpg",
+      "assets/images/products/p12/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p12/clip-1-thumb.jpg",
+    "sku": "CHN-P12"
+  },
+  {
+    "id": 13,
+    "slug": "p13",
+    "name": "CHN-P13 \u2014 Baby Pink Charm",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Karandi",
+    "color": "Baby Pink Charm",
+    "description": "Soft baby pink fabric with delicate thread work.",
+    "long_description": "Soft baby pink fabric with delicate thread work. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 8900,
+    "sale_price": 7120,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Sale",
+    "images": [
+      "assets/images/products/p13/clip-1.jpg",
+      "assets/images/products/p13/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p13/clip-1-thumb.jpg",
+    "sku": "CHN-P13"
+  },
+  {
+    "id": 14,
+    "slug": "p14",
+    "name": "CHN-P14 \u2014 Powder Blue",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Lawn",
+    "color": "Powder Blue",
+    "description": "Serene powder blue with fine embroidered accents.",
+    "long_description": "Serene powder blue with fine embroidered accents. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 10500,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "New Arrival",
+    "images": [
+      "assets/images/products/p14/clip-1.jpg",
+      "assets/images/products/p14/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p14/clip-1-thumb.jpg",
+    "sku": "CHN-P14"
+  },
+  {
+    "id": 15,
+    "slug": "p15",
+    "name": "CHN-P15 \u2014 Chinar Green",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Chiffon",
+    "color": "Chinar Green",
+    "description": "Signature Chinar green with leaf-inspired embroidery.",
+    "long_description": "Signature Chinar green with leaf-inspired embroidery. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 10500,
+    "sale_price": 7875,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Sale",
+    "images": [
+      "assets/images/products/p15/clip-1.jpg",
+      "assets/images/products/p15/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p15/clip-1-thumb.jpg",
+    "sku": "CHN-P15"
+  },
+  {
+    "id": 16,
+    "slug": "p16",
+    "name": "CHN-P16 \u2014 Crimson Rust",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Cambric",
+    "color": "Crimson Rust",
+    "description": "Bold rust-red palette with regal embroidered patches.",
+    "long_description": "Bold rust-red palette with regal embroidered patches. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 8900,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": false,
+    "badge": null,
+    "images": [
+      "assets/images/products/p16/clip-1.jpg",
+      "assets/images/products/p16/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p16/clip-1-thumb.jpg",
+    "sku": "CHN-P16"
+  },
+  {
+    "id": 17,
+    "slug": "p17",
+    "name": "CHN-P17 \u2014 Fresh Mint",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Luxury Pret Silk",
+    "color": "Fresh Mint",
+    "description": "Cool mint green with soft floral embellishment.",
+    "long_description": "Cool mint green with soft floral embellishment. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 8200,
+    "sale_price": 6150,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Sale",
+    "images": [
+      "assets/images/products/p17/clip-1.jpg",
+      "assets/images/products/p17/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p17/clip-1-thumb.jpg",
+    "sku": "CHN-P17"
+  },
+  {
+    "id": 18,
+    "slug": "p18",
+    "name": "CHN-P18 \u2014 Coral Charm",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Cambric",
+    "color": "Coral Charm",
+    "description": "Vibrant coral base with intricate gota work.",
+    "long_description": "Vibrant coral base with intricate gota work. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 11900,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Limited Edition",
+    "images": [
+      "assets/images/products/p18/clip-1.jpg",
+      "assets/images/products/p18/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p18/clip-1-thumb.jpg",
+    "sku": "CHN-P18"
+  },
+  {
+    "id": 19,
+    "slug": "p19",
+    "name": "CHN-P19 \u2014 Lavender Mist",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Lawn",
+    "color": "Lavender Mist",
+    "description": "Soft lavender tones with delicate pastel embroidery.",
+    "long_description": "Soft lavender tones with delicate pastel embroidery. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 8200,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Bestseller",
+    "images": [
+      "assets/images/products/p19/clip-1.jpg",
+      "assets/images/products/p19/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p19/clip-1-thumb.jpg",
+    "sku": "CHN-P19"
+  },
+  {
+    "id": 20,
+    "slug": "p20",
+    "name": "CHN-P20 \u2014 Teal Horizon",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Cambric",
+    "color": "Teal Horizon",
+    "description": "Deep teal-blue with statement embroidered border.",
+    "long_description": "Deep teal-blue with statement embroidered border. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 8200,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": null,
+    "images": [
+      "assets/images/products/p20/clip-1.jpg",
+      "assets/images/products/p20/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p20/clip-1-thumb.jpg",
+    "sku": "CHN-P20"
+  },
+  {
+    "id": 21,
+    "slug": "p21",
+    "name": "CHN-P21 \u2014 Cream Pastel",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Luxury Pret Silk",
+    "color": "Cream Pastel",
+    "description": "Cream base layered with soft pastel floral prints.",
+    "long_description": "Cream base layered with soft pastel floral prints. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 11900,
+    "sale_price": 9520,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Limited Edition",
+    "images": [
+      "assets/images/products/p21/clip-1.jpg",
+      "assets/images/products/p21/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p21/clip-1-thumb.jpg",
+    "sku": "CHN-P21"
+  },
+  {
+    "id": 22,
+    "slug": "p22",
+    "name": "CHN-P22 \u2014 Honey Gold",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Luxury Pret Silk",
+    "color": "Honey Gold",
+    "description": "Honey-gold shades with traditional zari embroidery.",
+    "long_description": "Honey-gold shades with traditional zari embroidery. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 7500,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Limited Edition",
+    "images": [
+      "assets/images/products/p22/clip-1.jpg",
+      "assets/images/products/p22/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p22/clip-1-thumb.jpg",
+    "sku": "CHN-P22"
+  },
+  {
+    "id": 23,
+    "slug": "p23",
+    "name": "CHN-P23 \u2014 Rosewood",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Cambric",
+    "color": "Rosewood",
+    "description": "Rosewood pink with fine floral thread embroidery.",
+    "long_description": "Rosewood pink with fine floral thread embroidery. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 7500,
+    "sale_price": 5625,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Bestseller",
+    "images": [
+      "assets/images/products/p23/clip-1.jpg",
+      "assets/images/products/p23/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p23/clip-1-thumb.jpg",
+    "sku": "CHN-P23"
+  },
+  {
+    "id": 24,
+    "slug": "p24",
+    "name": "CHN-P24 \u2014 Olive Grove",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Lawn",
+    "color": "Olive Grove",
+    "description": "Earthy olive green with hand-worked embroidery.",
+    "long_description": "Earthy olive green with hand-worked embroidery. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 8200,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": null,
+    "images": [
+      "assets/images/products/p24/clip-1.jpg",
+      "assets/images/products/p24/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p24/clip-1-thumb.jpg",
+    "sku": "CHN-P24"
+  },
+  {
+    "id": 25,
+    "slug": "p25",
+    "name": "CHN-P25 \u2014 Royal Navy",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Luxury Pret Silk",
+    "color": "Royal Navy",
+    "description": "Regal navy blue with intricate embroidered panels.",
+    "long_description": "Regal navy blue with intricate embroidered panels. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 8900,
+    "sale_price": 6675,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Sale",
+    "images": [
+      "assets/images/products/p25/clip-1.jpg",
+      "assets/images/products/p25/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p25/clip-1-thumb.jpg",
+    "sku": "CHN-P25"
+  },
+  {
+    "id": 26,
+    "slug": "p26",
+    "name": "CHN-P26 \u2014 Peach Whisper",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Lawn",
+    "color": "Peach Whisper",
+    "description": "Soft peach tones with a delicate printed border.",
+    "long_description": "Soft peach tones with a delicate printed border. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 10500,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Limited Edition",
+    "images": [
+      "assets/images/products/p26/clip-1.jpg",
+      "assets/images/products/p26/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p26/clip-1-thumb.jpg",
+    "sku": "CHN-P26"
+  },
+  {
+    "id": 27,
+    "slug": "p27",
+    "name": "CHN-P27 \u2014 Sienna Bloom",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Lawn",
+    "color": "Sienna Bloom",
+    "description": "Sienna-brown florals with warm embroidered accents.",
+    "long_description": "Sienna-brown florals with warm embroidered accents. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 8900,
+    "sale_price": 7565,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": false,
+    "badge": "Bestseller",
+    "images": [
+      "assets/images/products/p27/clip-1.jpg",
+      "assets/images/products/p27/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p27/clip-1-thumb.jpg",
+    "sku": "CHN-P27"
+  },
+  {
+    "id": 28,
+    "slug": "p28",
+    "name": "CHN-P28 \u2014 Ocean Mist",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Luxury Pret Silk",
+    "color": "Ocean Mist",
+    "description": "Crisp white and blue with airy floral embroidery.",
+    "long_description": "Crisp white and blue with airy floral embroidery. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 7500,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "New Arrival",
+    "images": [
+      "assets/images/products/p28/clip-1.jpg",
+      "assets/images/products/p28/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p28/clip-1-thumb.jpg",
+    "sku": "CHN-P28"
+  },
+  {
+    "id": 29,
+    "slug": "p29",
+    "name": "CHN-P29 \u2014 Golden Meadow",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Chiffon",
+    "color": "Golden Meadow",
+    "description": "Golden-mustard fabric with meadow floral embroidery.",
+    "long_description": "Golden-mustard fabric with meadow floral embroidery. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 12900,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": false,
+    "badge": "Limited Edition",
+    "images": [
+      "assets/images/products/p29/clip-1.jpg",
+      "assets/images/products/p29/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p29/clip-1-thumb.jpg",
+    "sku": "CHN-P29"
+  },
+  {
+    "id": 30,
+    "slug": "p30",
+    "name": "CHN-P30 \u2014 Blush Coral",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Chiffon",
+    "color": "Blush Coral",
+    "description": "Blush-coral shades with fine embroidered detailing.",
+    "long_description": "Blush-coral shades with fine embroidered detailing. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 8900,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": null,
+    "images": [
+      "assets/images/products/p30/clip-1.jpg",
+      "assets/images/products/p30/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p30/clip-1-thumb.jpg",
+    "sku": "CHN-P30"
+  },
+  {
+    "id": 31,
+    "slug": "p31",
+    "name": "CHN-P31 \u2014 Emerald Mist",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Karandi",
+    "color": "Emerald Mist",
+    "description": "Cool emerald-teal with intricate embroidered border.",
+    "long_description": "Cool emerald-teal with intricate embroidered border. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 11900,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": false,
+    "badge": null,
+    "images": [
+      "assets/images/products/p31/clip-1.jpg",
+      "assets/images/products/p31/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p31/clip-1-thumb.jpg",
+    "sku": "CHN-P31"
+  },
+  {
+    "id": 32,
+    "slug": "p32",
+    "name": "CHN-P32 \u2014 Orchid Mauve",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Karandi",
+    "color": "Orchid Mauve",
+    "description": "Orchid mauve with delicate hand-embroidered motifs.",
+    "long_description": "Orchid mauve with delicate hand-embroidered motifs. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 7500,
+    "sale_price": 5625,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "Bestseller",
+    "images": [
+      "assets/images/products/p32/clip-1.jpg",
+      "assets/images/products/p32/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p32/clip-1-thumb.jpg",
+    "sku": "CHN-P32"
+  },
+  {
+    "id": 33,
+    "slug": "p33",
+    "name": "CHN-P33 \u2014 Ivory Frost",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Lawn",
+    "color": "Ivory Frost",
+    "description": "Frosted ivory with fine pastel embroidered work.",
+    "long_description": "Frosted ivory with fine pastel embroidered work. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 8900,
+    "sale_price": 7565,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "New Arrival",
+    "images": [
+      "assets/images/products/p33/clip-1.jpg",
+      "assets/images/products/p33/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p33/clip-1-thumb.jpg",
+    "sku": "CHN-P33"
+  },
+  {
+    "id": 34,
+    "slug": "p34",
+    "name": "CHN-P34 \u2014 Rustic Amber",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Lawn",
+    "color": "Rustic Amber",
+    "description": "Rustic amber tones with statement embroidered panel.",
+    "long_description": "Rustic amber tones with statement embroidered panel. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 6900,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": null,
+    "images": [
+      "assets/images/products/p34/clip-1.jpg",
+      "assets/images/products/p34/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p34/clip-1-thumb.jpg",
+    "sku": "CHN-P34"
+  },
+  {
+    "id": 35,
+    "slug": "p35",
+    "name": "CHN-P35 \u2014 Sage Whisper",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Chiffon",
+    "color": "Sage Whisper",
+    "description": "Soft sage green with delicate floral embroidery.",
+    "long_description": "Soft sage green with delicate floral embroidery. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 9500,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": null,
+    "images": [
+      "assets/images/products/p35/clip-1.jpg",
+      "assets/images/products/p35/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p35/clip-1-thumb.jpg",
+    "sku": "CHN-P35"
+  },
+  {
+    "id": 36,
+    "slug": "p36",
+    "name": "CHN-P36 \u2014 Midnight Blue",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Cambric",
+    "color": "Midnight Blue",
+    "description": "Deep midnight blue with fine embroidered neckline.",
+    "long_description": "Deep midnight blue with fine embroidered neckline. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 12900,
+    "sale_price": 10320,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": "New Arrival",
+    "images": [
+      "assets/images/products/p36/clip-1.jpg",
+      "assets/images/products/p36/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p36/clip-1-thumb.jpg",
+    "sku": "CHN-P36"
+  },
+  {
+    "id": 37,
+    "slug": "p37",
+    "name": "CHN-P37 \u2014 Rosewood Bloom",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Karandi",
+    "color": "Rosewood Bloom",
+    "description": "Rosewood pink base with floral embroidered border.",
+    "long_description": "Rosewood pink base with floral embroidered border. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 7500,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": false,
+    "badge": null,
+    "images": [
+      "assets/images/products/p37/clip-1.jpg",
+      "assets/images/products/p37/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p37/clip-1-thumb.jpg",
+    "sku": "CHN-P37"
+  },
+  {
+    "id": 38,
+    "slug": "p38",
+    "name": "CHN-P38 \u2014 Blossom Pink",
+    "collection": "Chinar Signature Collection",
+    "category": "ready-to-wear",
+    "fabric": "Embroidered Lawn",
+    "color": "Blossom Pink",
+    "description": "Soft blossom pink with intricate floral embroidery.",
+    "long_description": "Soft blossom pink with intricate floral embroidery. A ready-to-wear 2-piece suit (shirt &amp; trouser) with matching dupatta, stitched and ready to wear in Small, Medium and Large. Pair with a matching hijab for a complete, modest look.",
+    "price": 12900,
+    "sale_price": null,
+    "currency": "PKR",
+    "sizes": [
+      "Small",
+      "Medium",
+      "Large"
+    ],
+    "in_stock": true,
+    "badge": null,
+    "images": [
+      "assets/images/products/p38/clip-1.jpg",
+      "assets/images/products/p38/clip-2.jpg"
+    ],
+    "thumb": "assets/images/products/p38/clip-1-thumb.jpg",
+    "sku": "CHN-P38"
+  }
+];
