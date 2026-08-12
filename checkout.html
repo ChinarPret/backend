@@ -85,7 +85,7 @@
           <label class="pay-opt"><input type="radio" name="payment" value="card" />${ICONS.cardIcon}<div><div class="pay-name">Credit / Debit Card</div><div class="pay-desc">Secure payment via card (demo checkout).</div></div></label>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-block" style="margin-top:10px;">Place Order — ${formatPrice(total)}</button>
+        <button type="submit" id="place-order-btn" class="btn btn-primary btn-block" style="margin-top:10px;">Place Order — ${formatPrice(total)}</button>
       </div>
 
       <aside class="order-summary">
@@ -126,34 +126,41 @@
     }
   });
 
-  document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+  // Submit Handler
+  document.getElementById('checkoutForm').addEventListener('submit', async function (e) {
     e.preventDefault();
+
+    const placeOrderBtn = document.getElementById('place-order-btn');
+    placeOrderBtn.innerText = 'Processing Order...';
+    placeOrderBtn.disabled = true;
+
     const fd = new FormData(e.target);
-    const order = {
+    const orderId = 'CHN-' + Math.floor(100000 + Math.random() * 900000);
+
+    const orderData = {
       customer: Object.fromEntries(fd.entries()),
-      items: items.map(i => ({ id: i.id, name: i.product.name, size: i.size, qty: i.qty, unitPrice: i.unitPrice })),
-      subtotal, shipping, total,
-      placedAt: new Date().toISOString(),
+      items: items.map(i => ({ id: i.id, name: i.product.name, size: i.size, qty: i.qty, unitPrice: i.unitPrice, product: i.product, lineTotal: i.lineTotal })),
+      subtotal: subtotal,
+      shipping: shipping,
+      total: total,
+      orderId: orderId,
+      placedAt: new Date().toISOString()
     };
 
-    let orderId = 'CHN-' + Math.floor(100000 + Math.random() * 900000);
-    try {
-      const res = await fetch('/api/order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(order),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        orderId = data.orderId || orderId;
-      }
-    } catch (err) {
-      /* backend not running - proceed with client-side order id */
-    }
+    // Paste your Web3Forms access key here:
+    const WEB3FORMS_ACCESS_KEY = "5f1fc1ef-0441-467a-a17d-fa39f0ee1e44";
 
-    localStorage.setItem('chinar_last_order', JSON.stringify({ ...order, orderId }));
+    // 1. Send Order Email via Web3Forms
+    await Cart.sendOrderEmail(orderData, WEB3FORMS_ACCESS_KEY);
+
+    // 2. Save snapshot locally
+    localStorage.setItem('chinar_last_order', JSON.stringify(orderData));
+
+    // 3. Clear shopping cart
     Cart.clear();
-    location.href = `order-success.html?id=${orderId}`;
+
+    // 4. Redirect window to order success page
+    window.location.href = `order-success.html?id=${orderId}`;
   });
 })();
 </script>
