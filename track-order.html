@@ -95,11 +95,20 @@
         return;
       }
 
+      const paymentMethod = data.customer.payment;
+      const needsPayment = paymentMethod === 'bank' || paymentMethod === 'wallet';
+      const paymentReceived = data.paymentStatus === 'received';
+
       resultEl.innerHTML = `
         <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px;">
           <h3 style="margin:0;">Order ${data.orderId}</h3>
           <span style="color:var(--ink-soft);font-size:.85rem;">Placed ${new Date(data.placedAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
         </div>
+        ${needsPayment ? `
+        <div style="margin:10px 0 20px;padding:12px 16px;border-radius:var(--radius-md);background:${paymentReceived ? 'var(--sage-50)' : '#fbf3e0'};border:1px solid ${paymentReceived ? 'var(--sage-200)' : '#eddcae'};font-size:.85rem;">
+          <strong>${paymentReceived ? '✓ Payment Received' : 'Payment Pending Confirmation'}</strong>
+          ${paymentReceived ? '' : `<div style="color:var(--ink-soft);margin-top:4px;">We'll confirm your ${paymentMethod === 'bank' ? 'bank transfer' : 'wallet payment'} and notify you within a few hours.</div>`}
+        </div>` : ''}
         ${renderTimeline(data.stages, data.currentStage)}
         <div style="border-top:1px solid var(--line);padding-top:20px;">
           <h4 style="margin-bottom:12px;">Items</h4>

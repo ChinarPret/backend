@@ -18,7 +18,10 @@
   .order-card-head h3{ margin:0; font-size:1.1rem; }
   .status-pill{ display:inline-block; font-size:.75rem; padding:4px 10px; border-radius:20px; background:var(--sage-100); color:var(--chinar-green-dark); font-weight:600; }
   .status-pill.cancelled{ background:#f2ddd8; color:var(--sale); }
+  .status-pill.payment-pending{ background:#fbeecb; color:#8a5a00; }
+  .status-pill.payment-received{ background:var(--sage-100); color:var(--chinar-green-dark); }
   .order-meta{ font-size:.8rem; color:var(--ink-soft); margin-bottom:14px; }
+  .payment-controls{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); }
   .status-controls{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:14px; }
   .status-controls select{ padding:8px 10px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--white); font-family:var(--font-body); }
   .admin-search{ margin-bottom:22px; }
@@ -66,6 +69,14 @@ function statusClass(status) {
   return status === 'Cancelled' ? 'status-pill cancelled' : 'status-pill';
 }
 
+function paymentLabel(status) {
+  return status === 'received' ? 'Payment Received' : 'Payment Pending';
+}
+
+function paymentClass(status) {
+  return status === 'received' ? 'status-pill payment-received' : 'status-pill payment-pending';
+}
+
 function renderOrders(orders) {
   const container = document.getElementById('ordersContainer');
   if (orders.length === 0) {
@@ -76,11 +87,16 @@ function renderOrders(orders) {
   container.innerHTML = orders.map(o => {
     const c = o.customer || {};
     const stageOptions = STAGES.map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('');
+    const needsPayment = c.payment === 'bank' || c.payment === 'wallet';
+    const paymentStatus = o.paymentStatus || (needsPayment ? 'pending' : 'not_applicable');
     return `
     <div class="order-card" data-order-id="${o.orderId}">
       <div class="order-card-head">
         <h3>${o.orderId}</h3>
-        <span class="${statusClass(o.status)}">${o.status || 'Order Placed'}</span>
+        <span style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="${statusClass(o.status)}">${o.status || 'Order Placed'}</span>
+          ${needsPayment ? `<span class="payment-pill ${paymentClass(paymentStatus)}">${paymentLabel(paymentStatus)}</span>` : ''}
+        </span>
       </div>
       <div class="order-meta">
         ${new Date(o.placedAt).toLocaleString('en-PK', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
@@ -100,6 +116,14 @@ function renderOrders(orders) {
         <button class="btn btn-outline btn-sm update-btn">Update Status</button>
         <span class="update-msg" style="font-size:.8rem;color:var(--chinar-green-dark);"></span>
       </div>
+
+      ${needsPayment ? `
+      <div class="payment-controls">
+        <button class="btn btn-primary btn-sm payment-btn" data-mark="${paymentStatus === 'received' ? 'pending' : 'received'}">
+          ${paymentStatus === 'received' ? 'Mark Payment Pending' : 'Mark Payment Received'}
+        </button>
+        <span class="payment-msg" style="font-size:.8rem;color:var(--chinar-green-dark);"></span>
+      </div>` : ''}
     </div>`;
   }).join('');
 
@@ -134,6 +158,39 @@ function renderOrders(orders) {
         btn.disabled = false;
       }
     });
+
+    const payBtn = card.querySelector('.payment-btn');
+    if (payBtn) {
+      payBtn.addEventListener('click', async () => {
+        const target = payBtn.dataset.mark; // 'received' or 'pending'
+        const payMsg = card.querySelector('.payment-msg');
+        payBtn.disabled = true;
+        payMsg.textContent = 'Saving...';
+        try {
+          const res = await fetch(`/api/admin/orders/${encodeURIComponent(orderId)}/payment?key=${encodeURIComponent(adminKey)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ paymentStatus: target, key: adminKey })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            payMsg.textContent = 'Updated ✓';
+            const pill = card.querySelector('.payment-pill');
+            pill.textContent = paymentLabel(data.paymentStatus);
+            pill.className = 'payment-pill ' + paymentClass(data.paymentStatus);
+            payBtn.dataset.mark = data.paymentStatus === 'received' ? 'pending' : 'received';
+            payBtn.textContent = data.paymentStatus === 'received' ? 'Mark Payment Pending' : 'Mark Payment Received';
+            setTimeout(() => { payMsg.textContent = ''; }, 2000);
+          } else {
+            payMsg.textContent = data.error || 'Failed to update';
+          }
+        } catch (e) {
+          payMsg.textContent = 'Network error';
+        } finally {
+          payBtn.disabled = false;
+        }
+      });
+    }
   });
 }
 

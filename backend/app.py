@@ -185,6 +185,12 @@ def create_order():
     # page) so the two stay in sync, falling back to generating one ourselves.
     order_id = data.get("orderId") or make_order_id()
 
+    # Cash on Delivery has no advance payment to confirm. Bank Transfer and
+    # Mobile Wallet orders start out "pending" until the seller manually
+    # marks the payment as received (see /api/admin/orders/<id>/payment).
+    payment_method = (data.get("customer", {}) or {}).get("payment", "cod")
+    payment_status = "pending" if payment_method in ("bank", "wallet") else "not_applicable"
+
     order = {
         "orderId": order_id,
         "customer": data.get("customer", {}),
@@ -193,6 +199,7 @@ def create_order():
         "shipping": data.get("shipping", 0),
         "total": data.get("total", 0),
         "status": ORDER_STAGES[0],  # "Order Placed" — you update this from the admin page as it moves along
+        "paymentStatus": payment_status,  # "pending" | "received" | "not_applicable"
         "placedAt": data.get("placedAt") or (datetime.utcnow().isoformat() + "Z"),
     }
     orders.append(order)
@@ -246,6 +253,7 @@ def track_order(order_id):
         },
         "stages": ORDER_STAGES,
         "currentStage": order.get("status", ORDER_STAGES[0]),
+        "paymentStatus": order.get("paymentStatus", "not_applicable"),
     })
 
 
@@ -275,6 +283,36 @@ def update_order_status(order_id):
     order["status"] = new_status
     save_orders(orders)
     return jsonify({"orderId": order["orderId"], "status": new_status})
+
+
+@app.route("/api/admin/orders/<order_id>/payment", methods=["POST"])
+def update_payment_status(order_id):
+    """
+    Seller-only: mark a Bank Transfer / Mobile Wallet order's payment as
+    received (or move it back to pending if you need to undo). This is the
+    endpoint the admin.html "Mark Payment Received" button calls once you've
+    checked your bank/wallet account and seen the customer's transfer land.
+    Body: {"paymentStatus": "received"}  (key can also go in ?key=... or the
+    X-Admin-Key header instead).
+    """
+    if not check_admin_key():
+        data = request.get_json(silent=True) or {}
+        if data.get("key") != ADMIN_KEY:
+            return jsonify({"error": "Admin key required"}), 401
+
+    data = request.get_json(force=True)
+    new_status = data.get("paymentStatus")
+    if new_status not in ("received", "pending"):
+        return jsonify({"error": "paymentStatus must be 'received' or 'pending'"}), 400
+
+    orders = load_orders()
+    order = next((o for o in orders if o["orderId"].lower() == order_id.lower()), None)
+    if not order:
+        return jsonify({"error": "No order found with that ID"}), 404
+
+    order["paymentStatus"] = new_status
+    save_orders(orders)
+    return jsonify({"orderId": order["orderId"], "paymentStatus": new_status})
 
 
 if __name__ == "__main__":

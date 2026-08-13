@@ -64,18 +64,32 @@
         <div style="font-weight:600;">${h.orderId}</div>
         <div style="font-size:.78rem;color:var(--ink-soft);">${new Date(h.placedAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
       </div>
-      <div class="order-status-badge" style="font-size:.8rem;padding:6px 12px;border-radius:20px;background:var(--sage-100);color:var(--chinar-green-dark);">Checking...</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <div class="order-payment-badge" style="display:none;font-size:.78rem;padding:6px 12px;border-radius:20px;"></div>
+        <div class="order-status-badge" style="font-size:.8rem;padding:6px 12px;border-radius:20px;background:var(--sage-100);color:var(--chinar-green-dark);">Checking...</div>
+      </div>
     </div>`).join('');
 
-  // Fetch live status for each order and fill in the badge
+  // Fetch live status for each order and fill in the badges
   history.forEach(async (h) => {
     const card = listEl.querySelector(`[data-order-id="${CSS.escape(h.orderId)}"]`);
     const badge = card.querySelector('.order-status-badge');
+    const paymentBadge = card.querySelector('.order-payment-badge');
     try {
       const res = await fetch(`/api/orders/${encodeURIComponent(h.orderId)}?phone=${encodeURIComponent(h.phone)}`);
       const data = await res.json();
       if (res.ok) {
         badge.textContent = data.currentStage;
+
+        const paymentMethod = data.customer && data.customer.payment;
+        if (paymentMethod === 'bank' || paymentMethod === 'wallet') {
+          const received = data.paymentStatus === 'received';
+          paymentBadge.textContent = received ? 'Payment Received' : 'Payment Pending';
+          paymentBadge.style.background = received ? 'var(--sage-100)' : '#fbeecb';
+          paymentBadge.style.color = received ? 'var(--chinar-green-dark)' : '#8a5a00';
+          paymentBadge.style.display = 'inline-block';
+        }
+
         card.style.cursor = 'pointer';
         card.addEventListener('click', () => {
           location.href = `track-order.html?id=${encodeURIComponent(h.orderId)}&phone=${encodeURIComponent(h.phone)}`;
