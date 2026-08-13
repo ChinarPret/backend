@@ -42,6 +42,13 @@ SITE_DIR = os.path.dirname(BASE_DIR)  # the folder containing index.html etc.
 PRODUCTS_FILE = os.path.join(BASE_DIR, "products.json")
 ORDERS_FILE = os.path.join(BASE_DIR, "orders.json")
 
+# Password for the seller-only admin actions (updating order status, viewing
+# the full order list). CHANGE THIS to something only you know before going
+# live — anyone with this key can see every customer's name/address/phone.
+# Better yet, set it as an environment variable named ADMIN_KEY on your host
+# instead of hardcoding it here.
+ADMIN_KEY = os.environ.get("ADMIN_KEY", "chinar-admin-2026")
+
 app = Flask(__name__, static_folder=None)
 CORS(app)  # allow requests from your Netlify frontend domain
 
@@ -163,33 +170,10 @@ def add_product():
 ORDER_STAGES = ["Order Placed", "Processing", "Packed", "Shipped", "Delivered"]
 
 
-def compute_stage(order):
-    """
-    Demo tracking logic: since there's no admin panel to manually update an
-    order's status yet, we estimate the current stage from how long ago the
-    order was placed. Swap this out for a real "status" field you update by
-    hand (or from a courier's API) once you're ready to track orders for real.
-    """
-    if order.get("status") == "cancelled":
-        return "Cancelled"
-
-    try:
-        placed = datetime.fromisoformat(order["placedAt"].replace("Z", "+00:00"))
-    except Exception:
-        return ORDER_STAGES[0]
-
-    hours = (datetime.utcnow().replace(tzinfo=placed.tzinfo) - placed).total_seconds() / 3600
-
-    if hours < 1:
-        return ORDER_STAGES[0]
-    elif hours < 24:
-        return ORDER_STAGES[1]
-    elif hours < 48:
-        return ORDER_STAGES[2]
-    elif hours < 96:
-        return ORDER_STAGES[3]
-    else:
-        return ORDER_STAGES[4]
+def check_admin_key():
+    """Reads the admin key from either ?key=... or an X-Admin-Key header."""
+    supplied = request.args.get("key") or request.headers.get("X-Admin-Key") or ""
+    return supplied == ADMIN_KEY
 
 
 @app.route("/api/order", methods=["POST"])
@@ -208,7 +192,7 @@ def create_order():
         "subtotal": data.get("subtotal", 0),
         "shipping": data.get("shipping", 0),
         "total": data.get("total", 0),
-        "status": "processing",
+        "status": ORDER_STAGES[0],  # "Order Placed" — you update this from the admin page as it moves along
         "placedAt": data.get("placedAt") or (datetime.utcnow().isoformat() + "Z"),
     }
     orders.append(order)
@@ -218,8 +202,10 @@ def create_order():
 
 @app.route("/api/orders", methods=["GET"])
 def list_orders():
-    # Simple shop-owner view. Add authentication before exposing this
-    # outside your own machine / a trusted admin panel.
+    # Seller-only: full order list including customer names/addresses/phones.
+    # Requires the admin key (see ADMIN_KEY above) — e.g. /api/orders?key=...
+    if not check_admin_key():
+        return jsonify({"error": "Admin key required"}), 401
     return jsonify(load_orders())
 
 
@@ -259,8 +245,36 @@ def track_order(order_id):
             "payment": order.get("customer", {}).get("payment"),
         },
         "stages": ORDER_STAGES,
-        "currentStage": compute_stage(order),
+        "currentStage": order.get("status", ORDER_STAGES[0]),
     })
+
+
+@app.route("/api/admin/orders/<order_id>/status", methods=["POST"])
+def update_order_status(order_id):
+    """
+    Seller-only: manually move an order to a new stage. This is the endpoint
+    the admin.html page calls when you click a stage button.
+    Body: {"status": "Packed", "key": "..."}  (key can also go in ?key=... or
+    the X-Admin-Key header instead).
+    """
+    if not check_admin_key():
+        data = request.get_json(silent=True) or {}
+        if data.get("key") != ADMIN_KEY:
+            return jsonify({"error": "Admin key required"}), 401
+
+    data = request.get_json(force=True)
+    new_status = data.get("status")
+    if new_status not in ORDER_STAGES and new_status != "Cancelled":
+        return jsonify({"error": f"status must be one of {ORDER_STAGES + ['Cancelled']}"}), 400
+
+    orders = load_orders()
+    order = next((o for o in orders if o["orderId"].lower() == order_id.lower()), None)
+    if not order:
+        return jsonify({"error": "No order found with that ID"}), 404
+
+    order["status"] = new_status
+    save_orders(orders)
+    return jsonify({"orderId": order["orderId"], "status": new_status})
 
 
 if __name__ == "__main__":
