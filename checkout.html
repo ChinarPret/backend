@@ -198,19 +198,46 @@
     // Paste your Web3Forms access key here:
     const WEB3FORMS_ACCESS_KEY = "5f1fc1ef-0441-467a-a17d-fa39f0ee1e44";
 
-    // 1. Send Order Email via Web3Forms
-    await Cart.sendOrderEmail(orderData, WEB3FORMS_ACCESS_KEY);
-
-    // 2. Save the order to the backend so it can be looked up later on the Track Order page
-    try {
-      await fetch('/api/order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
-      });
-    } catch (err) {
-      console.error('Could not save order to backend:', err);
+    // Helper: don't let a slow/sleeping backend or flaky network hang the
+    // checkout forever — give each request a max wait, then move on.
+    function withTimeout(promise, ms) {
+      return Promise.race([
+        promise,
+        new Promise((resolve) => setTimeout(() => resolve({ timedOut: true }), ms))
+      ]);
     }
+
+    // Let the customer know if the backend is taking a while to wake up
+    // (e.g. a free-tier host that spins down when idle).
+    const slowNotice = setTimeout(() => {
+      placeOrderBtn.innerText = 'Still working — almost there...';
+    }, 6000);
+
+    // 1 & 2. Send the order email and save it to the backend AT THE SAME TIME
+    // (not one after another) so the customer isn't waiting on both in series.
+    // Each is capped at 10s — if the backend hasn't responded by then, we
+    // still let the customer through; the order is safely stored in this
+    // browser's history either way.
+    await Promise.allSettled([
+      withTimeout(
+        Cart.sendOrderEmail(orderData, WEB3FORMS_ACCESS_KEY).catch(err => {
+          console.error('Could not send order email:', err);
+        }),
+        10000
+      ),
+      withTimeout(
+        fetch('/api/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderData)
+        }).catch(err => {
+          console.error('Could not save order to backend:', err);
+        }),
+        10000
+      )
+    ]);
+
+    clearTimeout(slowNotice);
 
     // 3. Save snapshot locally + add to this browser's order history
     localStorage.setItem('chinar_last_order', JSON.stringify(orderData));

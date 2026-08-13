@@ -22,8 +22,11 @@
       </div>
       <span class="eyebrow">Thank You</span>
       <h1 class="section-title">Your Order is Confirmed</h1>
-      <p class="lede" style="margin:14px auto 6px;">Order <strong id="orderIdText">CHN-000000</strong> has been placed successfully. A confirmation will be sent to your email/phone shortly.</p>
-      <p class="lede" style="margin:0 auto 34px;">Our artisans are preparing your pieces with care — expect delivery within 3–6 business days.</p>
+      <p class="lede" style="margin:14px auto 0;">Order <strong id="orderIdText">CHN-000000</strong> has been placed successfully. A confirmation will be sent to your email/phone shortly.</p>
+      <div style="margin:10px auto 0;">
+        <button type="button" id="copyOrderIdBtn" class="btn btn-outline btn-sm">Copy Order ID</button>
+      </div>
+      <p class="lede" style="margin:20px auto 34px;">Our artisans are preparing your pieces with care — expect delivery within 3–6 business days.</p>
       <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
         <a href="shop.html" class="btn btn-primary">Continue Shopping</a>
         <a href="index.html" class="btn btn-outline">Back to Home</a>
@@ -47,6 +50,16 @@
   const phone = params.get('phone');
   if (id) document.getElementById('orderIdText').textContent = id;
   if (id) document.getElementById('trackLink').href = `track-order.html?id=${encodeURIComponent(id)}${phone ? '&phone=' + encodeURIComponent(phone) : ''}`;
+
+  document.getElementById('copyOrderIdBtn').addEventListener('click', async () => {
+    const orderId = document.getElementById('orderIdText').textContent.trim();
+    try {
+      await navigator.clipboard.writeText(orderId);
+      showToast('Order ID copied to clipboard.');
+    } catch (e) {
+      showToast('Could not copy — please copy it manually.');
+    }
+  });
 </script>
 </body>
 </html>
