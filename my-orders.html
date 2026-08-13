@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Orders — Chinar Clothing Store</title>
+<link rel="icon" href="assets/images/logo/chinar-logo-square.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<div id="top-marquee"></div>
+<header class="site-header" id="site-header" data-active=""></header>
+
+<main>
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Order History</span>
+      <h1>My Orders</h1>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="wrap-narrow" id="ordersMount">
+      <p style="color:var(--ink-soft);font-size:.85rem;">Orders you've placed from this browser. Looking for an order placed elsewhere or from a different device? <a href="track-order.html" style="color:var(--chinar-green-dark);text-decoration:underline;">Track it by Order ID</a> instead.</p>
+      <div id="ordersList" style="margin-top:24px;"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" id="site-footer"></footer>
+<div id="cart-drawer-mount"></div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/products-data.js"></script>
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/partials.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+(async function initMyOrders() {
+  const listEl = document.getElementById('ordersList');
+  let history = [];
+  try {
+    history = JSON.parse(localStorage.getItem('chinar_orders_v1')) || [];
+  } catch (e) {
+    history = [];
+  }
+
+  if (history.length === 0) {
+    listEl.innerHTML = `
+      <div class="empty-state">
+        ${ICONS.packageIcon}
+        <h3>No orders yet</h3>
+        <p class="lede center" style="margin:10px auto 24px;">Orders you place will show up here.</p>
+        <a href="shop.html" class="btn btn-primary">Shop the Collection</a>
+      </div>`;
+    return;
+  }
+
+  listEl.innerHTML = history.map(h => `<div class="order-card" data-order-id="${h.orderId}" style="border:1px solid var(--line);border-radius:var(--radius-md);padding:16px 18px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="font-weight:600;">${h.orderId}</div>
+        <div style="font-size:.78rem;color:var(--ink-soft);">${new Date(h.placedAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+      </div>
+      <div class="order-status-badge" style="font-size:.8rem;padding:6px 12px;border-radius:20px;background:var(--sage-100);color:var(--chinar-green-dark);">Checking...</div>
+    </div>`).join('');
+
+  // Fetch live status for each order and fill in the badge
+  history.forEach(async (h) => {
+    const card = listEl.querySelector(`[data-order-id="${CSS.escape(h.orderId)}"]`);
+    const badge = card.querySelector('.order-status-badge');
+    try {
+      const res = await fetch(`/api/orders/${encodeURIComponent(h.orderId)}?phone=${encodeURIComponent(h.phone)}`);
+      const data = await res.json();
+      if (res.ok) {
+        badge.textContent = data.currentStage;
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => {
+          location.href = `track-order.html?id=${encodeURIComponent(h.orderId)}&phone=${encodeURIComponent(h.phone)}`;
+        });
+      } else {
+        badge.textContent = 'Unavailable';
+      }
+    } catch (e) {
+      badge.textContent = 'Unavailable';
+    }
+  });
+})();
+</script>
+</body>
+</html>

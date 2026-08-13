@@ -85,11 +85,12 @@
           <label class="pay-opt"><input type="radio" name="payment" value="bank" />${ICONS.bankIcon}<div><div class="pay-name">Bank Transfer</div><div class="pay-desc">Transfer to our account, then place your order.</div></div></label>
           <div id="bankDetailsBox" style="display:none;margin:-6px 0 14px;padding:16px 18px;background:var(--sage-50);border:1px solid var(--sage-200);border-radius:var(--radius-md);">
             <div style="font-size:.82rem;color:var(--ink-soft);margin-bottom:8px;">Transfer the total amount to the account below, then place your order. We'll confirm your payment before dispatch.</div>
-            <div style="display:grid;gap:4px;font-size:.9rem;">
+            <div style="display:grid;gap:4px;font-size:.9rem;margin-bottom:12px;">
               <div><strong>Bank:</strong> <span data-edit="bank-name">[Add your bank name]</span></div>
               <div><strong>Account Title:</strong> <span data-edit="account-title">Chinar Clothing Store</span></div>
-              <div><strong>Account Number:</strong> 0489-79036274-03</div>
+              <div><strong>Account Number:</strong> <span id="bankAcctNumber">0489-79036274-03</span></div>
             </div>
+            <button type="button" class="btn btn-outline btn-sm copy-btn" data-copy-target="bankAcctNumber">Copy Account Number</button>
           </div>
 
           <label class="pay-opt"><input type="radio" name="payment" value="wallet" />${ICONS.walletIcon}<div><div class="pay-name">Mobile Wallet</div><div class="pay-desc">Pay via Easypaisa, JazzCash, or SadaPay.</div></div></label>
@@ -102,8 +103,12 @@
                 <option value="SadaPay">SadaPay</option>
               </select>
             </div>
-            <div style="font-size:.82rem;color:var(--ink-soft);margin-bottom:8px;">Send the total amount to the number below via your selected wallet, then place your order.</div>
-            <div style="font-size:.9rem;"><strong>Wallet Number:</strong> <span data-edit="wallet-number">+92 3239898913</span></div>
+            <div style="font-size:.82rem;color:var(--ink-soft);margin-bottom:8px;">Open your <span id="walletNameInline">Easypaisa</span> app and send the total amount to the number below, then place your order.</div>
+            <div style="font-size:.9rem;margin-bottom:12px;"><strong>Wallet Number:</strong> <span id="walletNumber" data-edit="wallet-number">+92 3239898913</span></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline btn-sm copy-btn" data-copy-target="walletNumber">Copy Number</button>
+              <a id="walletAppLink" href="https://play.google.com/store/search?q=easypaisa&c=apps" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Don't have the app? Get it</a>
+            </div>
           </div>
         </div>
 
@@ -131,10 +136,25 @@
       </aside>
     </form>`;
 
+  const WALLET_APP_LINKS = {
+    Easypaisa: "https://play.google.com/store/search?q=easypaisa&c=apps",
+    JazzCash: "https://play.google.com/store/search?q=jazzcash&c=apps",
+    SadaPay: "https://play.google.com/store/search?q=sadapay&c=apps",
+  };
+
   function updatePaymentBoxes() {
     const selected = document.querySelector('input[name="payment"]:checked').value;
     document.getElementById('bankDetailsBox').style.display = selected === 'bank' ? 'block' : 'none';
     document.getElementById('walletDetailsBox').style.display = selected === 'wallet' ? 'block' : 'none';
+  }
+
+  function notifyPayment(selected) {
+    if (selected === 'bank') {
+      showToast('Bank details ready below — transfer the total, then place your order.');
+    } else if (selected === 'wallet') {
+      const provider = document.getElementById('walletProvider').value;
+      showToast(`${provider} number ready below — send the total, then place your order.`);
+    }
   }
 
   document.querySelectorAll('.pay-opt').forEach(opt => {
@@ -143,9 +163,29 @@
       opt.classList.add('selected');
       opt.querySelector('input').checked = true;
       updatePaymentBoxes();
+      notifyPayment(opt.querySelector('input').value);
     });
   });
   updatePaymentBoxes();
+
+  document.getElementById('walletProvider').addEventListener('change', function () {
+    document.getElementById('walletNameInline').textContent = this.value;
+    document.getElementById('walletAppLink').href = WALLET_APP_LINKS[this.value] || WALLET_APP_LINKS.Easypaisa;
+    showToast(`Switched to ${this.value} — number below stays the same.`);
+  });
+
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const target = document.getElementById(btn.dataset.copyTarget);
+      const text = target.textContent.trim();
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Copied to clipboard.');
+      } catch (e) {
+        showToast('Could not copy — please copy it manually.');
+      }
+    });
+  });
 
   document.getElementById('promoBtn').addEventListener('click', () => {
     const code = document.getElementById('promoInput').value.trim().toUpperCase();
@@ -194,8 +234,13 @@
       console.error('Could not save order to backend:', err);
     }
 
-    // 3. Save snapshot locally
+    // 3. Save snapshot locally + add to this browser's order history
     localStorage.setItem('chinar_last_order', JSON.stringify(orderData));
+    try {
+      const history = JSON.parse(localStorage.getItem('chinar_orders_v1')) || [];
+      history.unshift({ orderId, phone: orderData.customer.phone || '', placedAt: orderData.placedAt });
+      localStorage.setItem('chinar_orders_v1', JSON.stringify(history));
+    } catch (e) { /* localStorage unavailable — order is still saved on the server */ }
 
     // 4. Clear shopping cart
     Cart.clear();
