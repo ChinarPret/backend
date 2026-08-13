@@ -160,20 +160,56 @@ def add_product():
 
 
 # ---------------------------------------------------------------- Orders
+ORDER_STAGES = ["Order Placed", "Processing", "Packed", "Shipped", "Delivered"]
+
+
+def compute_stage(order):
+    """
+    Demo tracking logic: since there's no admin panel to manually update an
+    order's status yet, we estimate the current stage from how long ago the
+    order was placed. Swap this out for a real "status" field you update by
+    hand (or from a courier's API) once you're ready to track orders for real.
+    """
+    if order.get("status") == "cancelled":
+        return "Cancelled"
+
+    try:
+        placed = datetime.fromisoformat(order["placedAt"].replace("Z", "+00:00"))
+    except Exception:
+        return ORDER_STAGES[0]
+
+    hours = (datetime.utcnow().replace(tzinfo=placed.tzinfo) - placed).total_seconds() / 3600
+
+    if hours < 1:
+        return ORDER_STAGES[0]
+    elif hours < 24:
+        return ORDER_STAGES[1]
+    elif hours < 48:
+        return ORDER_STAGES[2]
+    elif hours < 96:
+        return ORDER_STAGES[3]
+    else:
+        return ORDER_STAGES[4]
+
+
 @app.route("/api/order", methods=["POST"])
 def create_order():
     data = request.get_json(force=True)
     orders = load_orders()
 
+    # Use the orderId the frontend already generated (shown on the order-success
+    # page) so the two stay in sync, falling back to generating one ourselves.
+    order_id = data.get("orderId") or make_order_id()
+
     order = {
-        "orderId": make_order_id(),
+        "orderId": order_id,
         "customer": data.get("customer", {}),
         "items": data.get("items", []),
         "subtotal": data.get("subtotal", 0),
         "shipping": data.get("shipping", 0),
         "total": data.get("total", 0),
-        "status": "pending",
-        "placedAt": datetime.utcnow().isoformat() + "Z",
+        "status": "processing",
+        "placedAt": data.get("placedAt") or (datetime.utcnow().isoformat() + "Z"),
     }
     orders.append(order)
     save_orders(orders)
@@ -185,6 +221,46 @@ def list_orders():
     # Simple shop-owner view. Add authentication before exposing this
     # outside your own machine / a trusted admin panel.
     return jsonify(load_orders())
+
+
+@app.route("/api/orders/<order_id>", methods=["GET"])
+def track_order(order_id):
+    """
+    Customer-facing order lookup for the Track Order page.
+    Requires the phone number used at checkout as a basic ownership check
+    (?phone=...), so a random guessed order ID alone can't reveal someone
+    else's address/order details.
+    """
+    phone = (request.args.get("phone") or "").strip()
+    orders = load_orders()
+    order = next((o for o in orders if o["orderId"].lower() == order_id.lower()), None)
+
+    if not order:
+        return jsonify({"error": "No order found with that ID"}), 404
+
+    order_phone = (order.get("customer", {}).get("phone") or "").strip()
+    # Loose match: compare digits only, so formatting differences don't fail a real match
+    digits = lambda s: "".join(ch for ch in s if ch.isdigit())
+    if not phone or digits(phone)[-9:] != digits(order_phone)[-9:]:
+        return jsonify({"error": "Order ID and phone number don't match"}), 403
+
+    return jsonify({
+        "orderId": order["orderId"],
+        "placedAt": order["placedAt"],
+        "items": order["items"],
+        "subtotal": order["subtotal"],
+        "shipping": order["shipping"],
+        "total": order["total"],
+        "customer": {
+            "fullName": order.get("customer", {}).get("fullName"),
+            "address": order.get("customer", {}).get("address"),
+            "city": order.get("customer", {}).get("city"),
+            "province": order.get("customer", {}).get("province"),
+            "payment": order.get("customer", {}).get("payment"),
+        },
+        "stages": ORDER_STAGES,
+        "currentStage": compute_stage(order),
+    })
 
 
 if __name__ == "__main__":

@@ -78,7 +78,7 @@ function renderFooter() {
         <li><a href="contact.html">Contact Us</a></li>
         <li><a href="about.html#faq">Size Guide</a></li>
         <li><a href="about.html#faq">Shipping &amp; Returns</a></li>
-        <li><a href="cart.html">Track Order</a></li>
+        <li><a href="track-order.html">Track Order</a></li>
       </ul>
     </div>
     <div class="footer-col">

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Track Your Order — Chinar Clothing Store</title>
+<link rel="icon" href="assets/images/logo/chinar-logo-square.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<div id="top-marquee"></div>
+<header class="site-header" id="site-header" data-active=""></header>
+
+<main>
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Order Status</span>
+      <h1>Track Your Order</h1>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="wrap-narrow" id="trackMount">
+      <div class="form-field"><label>Order ID</label><input required id="trackOrderId" placeholder="CHN-123456" /></div>
+      <div class="form-field"><label>Phone Number Used at Checkout</label><input required id="trackPhone" placeholder="03XX XXXXXXX" /></div>
+      <button type="button" id="trackBtn" class="btn btn-primary btn-block" style="margin-top:6px;">Track Order</button>
+      <p id="trackError" style="color:var(--sale);font-size:.85rem;margin-top:14px;display:none;"></p>
+
+      <div id="trackResult" style="margin-top:36px;display:none;"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" id="site-footer"></footer>
+<div id="cart-drawer-mount"></div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/products-data.js"></script>
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/partials.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+(function initTrackOrder() {
+  const params = new URLSearchParams(location.search);
+  const idField = document.getElementById('trackOrderId');
+  const phoneField = document.getElementById('trackPhone');
+  if (params.get('id')) idField.value = params.get('id');
+  if (params.get('phone')) phoneField.value = params.get('phone');
+
+  function renderTimeline(stages, currentStage) {
+    const currentIndex = stages.indexOf(currentStage);
+    return `
+      <div class="track-timeline" style="display:flex;flex-wrap:wrap;gap:0;margin:24px 0 32px;">
+        ${stages.map((stage, i) => `
+          <div style="flex:1;min-width:110px;text-align:center;position:relative;">
+            <div style="width:34px;height:34px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;
+              background:${i <= currentIndex ? 'var(--chinar-green)' : 'var(--sage-100)'};
+              color:${i <= currentIndex ? 'var(--white)' : 'var(--ink-soft)'};">
+              ${i <= currentIndex ? ICONS.check : (i + 1)}
+            </div>
+            <div style="font-size:.76rem;color:${i <= currentIndex ? 'var(--chinar-green-dark)' : 'var(--ink-soft)'};font-weight:${i === currentIndex ? '600' : '400'};">${stage}</div>
+          </div>
+        `).join('')}
+      </div>`;
+  }
+
+  async function trackOrder() {
+    const errorEl = document.getElementById('trackError');
+    const resultEl = document.getElementById('trackResult');
+    errorEl.style.display = 'none';
+    resultEl.style.display = 'none';
+
+    const id = idField.value.trim();
+    const phone = phoneField.value.trim();
+    if (!id || !phone) {
+      errorEl.textContent = 'Please enter both your Order ID and phone number.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    const btn = document.getElementById('trackBtn');
+    btn.disabled = true;
+    btn.innerText = 'Searching...';
+
+    try {
+      const res = await fetch(`/api/orders/${encodeURIComponent(id)}?phone=${encodeURIComponent(phone)}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        errorEl.textContent = data.error || 'Something went wrong. Please try again.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      resultEl.innerHTML = `
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px;">
+          <h3 style="margin:0;">Order ${data.orderId}</h3>
+          <span style="color:var(--ink-soft);font-size:.85rem;">Placed ${new Date(data.placedAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+        </div>
+        ${renderTimeline(data.stages, data.currentStage)}
+        <div style="border-top:1px solid var(--line);padding-top:20px;">
+          <h4 style="margin-bottom:12px;">Items</h4>
+          ${data.items.map(i => `
+            <div class="mini-cart-row">
+              <div style="flex:1;">
+                <div style="font-size:.88rem;font-weight:600;">${(i.product && i.product.name) || i.name} <span class="qty-badge">${i.qty}</span></div>
+                <div style="font-size:.76rem;color:var(--ink-soft);">${i.size}</div>
+              </div>
+              <div style="font-size:.88rem;">${formatPrice(i.lineTotal)}</div>
+            </div>`).join('')}
+          <div class="row total" style="margin-top:10px;"><span>Total</span><strong>${formatPrice(data.total)}</strong></div>
+        </div>
+        <div style="border-top:1px solid var(--line);padding-top:20px;margin-top:20px;">
+          <h4 style="margin-bottom:10px;">Delivery Address</h4>
+          <p style="font-size:.9rem;color:var(--ink-soft);margin:0;">
+            ${data.customer.fullName || ''}<br/>
+            ${data.customer.address || ''}${data.customer.city ? ', ' + data.customer.city : ''}${data.customer.province ? ', ' + data.customer.province : ''}
+          </p>
+        </div>`;
+      resultEl.style.display = 'block';
+    } catch (err) {
+      errorEl.textContent = 'Could not reach the server. Please try again in a moment.';
+      errorEl.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.innerText = 'Track Order';
+    }
+  }
+
+  document.getElementById('trackBtn').addEventListener('click', trackOrder);
+  [idField, phoneField].forEach(f => f.addEventListener('keydown', e => { if (e.key === 'Enter') trackOrder(); }));
+
+  // Auto-search if both values arrived via URL (e.g. link from order-success page)
+  if (params.get('id') && params.get('phone')) trackOrder();
+})();
+</script>
+</body>
+</html>

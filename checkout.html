@@ -81,8 +81,30 @@
         <h3 style="margin:30px 0 6px;">Payment Method</h3>
         <div class="pay-options" id="payOptions">
           <label class="pay-opt selected"><input type="radio" name="payment" value="cod" checked />${ICONS.cashIcon}<div><div class="pay-name">Cash on Delivery</div><div class="pay-desc">Pay when your order arrives at your doorstep.</div></div></label>
-          <label class="pay-opt"><input type="radio" name="payment" value="bank" />${ICONS.bankIcon}<div><div class="pay-name">Bank Transfer</div><div class="pay-desc">Transfer to our account; details sent after order.</div></div></label>
-          <label class="pay-opt"><input type="radio" name="payment" value="card" />${ICONS.cardIcon}<div><div class="pay-name">Credit / Debit Card</div><div class="pay-desc">Secure payment via card (demo checkout).</div></div></label>
+
+          <label class="pay-opt"><input type="radio" name="payment" value="bank" />${ICONS.bankIcon}<div><div class="pay-name">Bank Transfer</div><div class="pay-desc">Transfer to our account, then place your order.</div></div></label>
+          <div id="bankDetailsBox" style="display:none;margin:-6px 0 14px;padding:16px 18px;background:var(--sage-50);border:1px solid var(--sage-200);border-radius:var(--radius-md);">
+            <div style="font-size:.82rem;color:var(--ink-soft);margin-bottom:8px;">Transfer the total amount to the account below, then place your order. We'll confirm your payment before dispatch.</div>
+            <div style="display:grid;gap:4px;font-size:.9rem;">
+              <div><strong>Bank:</strong> <span data-edit="bank-name">[Add your bank name]</span></div>
+              <div><strong>Account Title:</strong> <span data-edit="account-title">Chinar Clothing Store</span></div>
+              <div><strong>Account Number:</strong> 0489-79036274-03</div>
+            </div>
+          </div>
+
+          <label class="pay-opt"><input type="radio" name="payment" value="wallet" />${ICONS.walletIcon}<div><div class="pay-name">Mobile Wallet</div><div class="pay-desc">Pay via Easypaisa, JazzCash, or SadaPay.</div></div></label>
+          <div id="walletDetailsBox" style="display:none;margin:-6px 0 14px;padding:16px 18px;background:var(--sage-50);border:1px solid var(--sage-200);border-radius:var(--radius-md);">
+            <div class="form-field" style="margin-bottom:12px;">
+              <label>Choose Wallet</label>
+              <select name="walletProvider" id="walletProvider">
+                <option value="Easypaisa">Easypaisa</option>
+                <option value="JazzCash">JazzCash</option>
+                <option value="SadaPay">SadaPay</option>
+              </select>
+            </div>
+            <div style="font-size:.82rem;color:var(--ink-soft);margin-bottom:8px;">Send the total amount to the number below via your selected wallet, then place your order.</div>
+            <div style="font-size:.9rem;"><strong>Wallet Number:</strong> <span data-edit="wallet-number">+92 3239898913</span></div>
+          </div>
         </div>
 
         <button type="submit" id="place-order-btn" class="btn btn-primary btn-block" style="margin-top:10px;">Place Order — ${formatPrice(total)}</button>
@@ -109,13 +131,21 @@
       </aside>
     </form>`;
 
+  function updatePaymentBoxes() {
+    const selected = document.querySelector('input[name="payment"]:checked').value;
+    document.getElementById('bankDetailsBox').style.display = selected === 'bank' ? 'block' : 'none';
+    document.getElementById('walletDetailsBox').style.display = selected === 'wallet' ? 'block' : 'none';
+  }
+
   document.querySelectorAll('.pay-opt').forEach(opt => {
     opt.addEventListener('click', () => {
       document.querySelectorAll('.pay-opt').forEach(o => o.classList.remove('selected'));
       opt.classList.add('selected');
       opt.querySelector('input').checked = true;
+      updatePaymentBoxes();
     });
   });
+  updatePaymentBoxes();
 
   document.getElementById('promoBtn').addEventListener('click', () => {
     const code = document.getElementById('promoInput').value.trim().toUpperCase();
@@ -153,14 +183,25 @@
     // 1. Send Order Email via Web3Forms
     await Cart.sendOrderEmail(orderData, WEB3FORMS_ACCESS_KEY);
 
-    // 2. Save snapshot locally
+    // 2. Save the order to the backend so it can be looked up later on the Track Order page
+    try {
+      await fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+    } catch (err) {
+      console.error('Could not save order to backend:', err);
+    }
+
+    // 3. Save snapshot locally
     localStorage.setItem('chinar_last_order', JSON.stringify(orderData));
 
-    // 3. Clear shopping cart
+    // 4. Clear shopping cart
     Cart.clear();
 
-    // 4. Redirect window to order success page
-    window.location.href = `order-success.html?id=${orderId}`;
+    // 5. Redirect window to order success page
+    window.location.href = `order-success.html?id=${orderId}&phone=${encodeURIComponent(orderData.customer.phone || '')}`;
   });
 })();
 </script>

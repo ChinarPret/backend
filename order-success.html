@@ -28,6 +28,7 @@
         <a href="shop.html" class="btn btn-primary">Continue Shopping</a>
         <a href="index.html" class="btn btn-outline">Back to Home</a>
       </div>
+      <p style="margin-top:24px;"><a id="trackLink" href="track-order.html" style="color:var(--chinar-green-dark);text-decoration:underline;">Track this order</a></p>
     </div>
   </section>
 </main>
@@ -41,8 +42,11 @@
 <script src="assets/js/partials.js"></script>
 <script src="assets/js/main.js"></script>
 <script>
-  const id = new URLSearchParams(location.search).get('id');
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  const phone = params.get('phone');
   if (id) document.getElementById('orderIdText').textContent = id;
+  if (id) document.getElementById('trackLink').href = `track-order.html?id=${encodeURIComponent(id)}${phone ? '&phone=' + encodeURIComponent(phone) : ''}`;
 </script>
 </body>
 </html>
