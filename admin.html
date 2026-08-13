@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin — Chinar Clothing Store</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="assets/images/logo/chinar-logo-square.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+<style>
+  body{ background:var(--off-white); }
+  .admin-wrap{ max-width:900px; margin:0 auto; padding:60px 20px 100px; }
+  .admin-login{ max-width:360px; margin:100px auto; text-align:center; }
+  .order-card{ border:1px solid var(--line); border-radius:var(--radius-md); padding:20px 22px; margin-bottom:16px; background:var(--paper); }
+  .order-card-head{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+  .order-card-head h3{ margin:0; font-size:1.1rem; }
+  .status-pill{ display:inline-block; font-size:.75rem; padding:4px 10px; border-radius:20px; background:var(--sage-100); color:var(--chinar-green-dark); font-weight:600; }
+  .status-pill.cancelled{ background:#f2ddd8; color:var(--sale); }
+  .order-meta{ font-size:.8rem; color:var(--ink-soft); margin-bottom:14px; }
+  .status-controls{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:14px; }
+  .status-controls select{ padding:8px 10px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--white); font-family:var(--font-body); }
+  .admin-search{ margin-bottom:22px; }
+  .admin-search input{ width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius-sm); font-family:var(--font-body); }
+  .logout-link{ font-size:.8rem; color:var(--ink-soft); cursor:pointer; text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<div class="admin-wrap">
+  <div id="loginScreen" class="admin-login">
+    <h2 style="margin-bottom:6px;">Seller Admin</h2>
+    <p style="color:var(--ink-soft);font-size:.85rem;margin-bottom:20px;">Enter your admin key to view and manage orders.</p>
+    <div class="form-field"><input type="password" id="adminKeyInput" placeholder="Admin key" /></div>
+    <button class="btn btn-primary btn-block" id="loginBtn">View Orders</button>
+    <p id="loginError" style="color:var(--sale);font-size:.85rem;margin-top:14px;display:none;">Incorrect key — please try again.</p>
+  </div>
+
+  <div id="dashboard" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:10px;">
+      <h1 style="margin:0;font-size:1.6rem;">Orders</h1>
+      <span class="logout-link" id="logoutBtn">Log out</span>
+    </div>
+    <div class="admin-search">
+      <input type="text" id="searchInput" placeholder="Search by Order ID, name, or phone..." />
+    </div>
+    <div id="ordersContainer">Loading orders...</div>
+  </div>
+</div>
+
+<script src="assets/js/icons.js"></script>
+<script>
+const STAGES = ["Order Placed", "Processing", "Packed", "Shipped", "Delivered", "Cancelled"];
+let allOrders = [];
+let adminKey = "";
+
+function formatPrice(n) { return "Rs. " + Number(n).toLocaleString("en-PK"); }
+
+function saveKey(key) {
+  adminKey = key;
+  sessionStorage.setItem('chinar_admin_key', key);
+}
+
+function statusClass(status) {
+  return status === 'Cancelled' ? 'status-pill cancelled' : 'status-pill';
+}
+
+function renderOrders(orders) {
+  const container = document.getElementById('ordersContainer');
+  if (orders.length === 0) {
+    container.innerHTML = `<p style="color:var(--ink-soft);">No orders found.</p>`;
+    return;
+  }
+
+  container.innerHTML = orders.map(o => {
+    const c = o.customer || {};
+    const stageOptions = STAGES.map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('');
+    return `
+    <div class="order-card" data-order-id="${o.orderId}">
+      <div class="order-card-head">
+        <h3>${o.orderId}</h3>
+        <span class="${statusClass(o.status)}">${o.status || 'Order Placed'}</span>
+      </div>
+      <div class="order-meta">
+        ${new Date(o.placedAt).toLocaleString('en-PK', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+        &nbsp;·&nbsp; ${c.fullName || 'Guest'} &nbsp;·&nbsp; ${c.phone || ''}
+        &nbsp;·&nbsp; ${(c.payment === 'bank' ? 'Bank Transfer' : c.payment === 'wallet' ? 'Mobile Wallet' : 'Cash on Delivery')}
+      </div>
+      <div style="font-size:.85rem;color:var(--ink-soft);margin-bottom:6px;">
+        ${c.address || ''}${c.city ? ', ' + c.city : ''}${c.province ? ', ' + c.province : ''}
+      </div>
+      <div style="font-size:.85rem;">
+        ${(o.items || []).map(i => `${(i.product && i.product.name) || i.name} (${i.size}) × ${i.qty}`).join(', ')}
+      </div>
+      <div style="font-weight:600;margin-top:8px;">${formatPrice(o.total)}</div>
+
+      <div class="status-controls">
+        <select class="stage-select">${stageOptions}</select>
+        <button class="btn btn-outline btn-sm update-btn">Update Status</button>
+        <span class="update-msg" style="font-size:.8rem;color:var(--chinar-green-dark);"></span>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.querySelectorAll('.order-card').forEach(card => {
+    const orderId = card.dataset.orderId;
+    const select = card.querySelector('.stage-select');
+    const btn = card.querySelector('.update-btn');
+    const msg = card.querySelector('.update-msg');
+
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      msg.textContent = 'Saving...';
+      try {
+        const res = await fetch(`/api/admin/orders/${encodeURIComponent(orderId)}/status?key=${encodeURIComponent(adminKey)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: select.value, key: adminKey })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          msg.textContent = 'Updated ✓';
+          const pill = card.querySelector('.status-pill');
+          pill.textContent = data.status;
+          pill.className = statusClass(data.status);
+          setTimeout(() => { msg.textContent = ''; }, 2000);
+        } else {
+          msg.textContent = data.error || 'Failed to update';
+        }
+      } catch (e) {
+        msg.textContent = 'Network error';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+}
+
+function filterOrders(query) {
+  query = query.trim().toLowerCase();
+  if (!query) return allOrders;
+  return allOrders.filter(o => {
+    const c = o.customer || {};
+    return o.orderId.toLowerCase().includes(query)
+      || (c.fullName || '').toLowerCase().includes(query)
+      || (c.phone || '').toLowerCase().includes(query);
+  });
+}
+
+async function loadOrders() {
+  const container = document.getElementById('ordersContainer');
+  container.innerHTML = 'Loading orders...';
+  try {
+    const res = await fetch(`/api/orders?key=${encodeURIComponent(adminKey)}`);
+    if (res.status === 401) {
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'block';
+      document.getElementById('loginError').style.display = 'block';
+      sessionStorage.removeItem('chinar_admin_key');
+      return;
+    }
+    const data = await res.json();
+    allOrders = data.sort((a, b) => new Date(b.placedAt) - new Date(a.placedAt));
+    renderOrders(allOrders);
+  } catch (e) {
+    container.innerHTML = `<p style="color:var(--sale);">Could not load orders. Check your connection and try again.</p>`;
+  }
+}
+
+document.getElementById('loginBtn').addEventListener('click', () => {
+  const key = document.getElementById('adminKeyInput').value.trim();
+  if (!key) return;
+  saveKey(key);
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  loadOrders();
+});
+
+document.getElementById('adminKeyInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  sessionStorage.removeItem('chinar_admin_key');
+  location.reload();
+});
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  renderOrders(filterOrders(e.target.value));
+});
+
+// Auto-login if key already in this session
+(function init() {
+  const savedKey = sessionStorage.getItem('chinar_admin_key');
+  if (savedKey) {
+    adminKey = savedKey;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadOrders();
+  }
+})();
+</script>
+</body>
+</html>
