@@ -24,8 +24,18 @@
 
   <section class="section">
     <div class="wrap-narrow" id="ordersMount">
-      <p style="color:var(--ink-soft);font-size:.85rem;">Orders you've placed from this browser. Looking for an order placed elsewhere or from a different device? <a href="track-order.html" style="color:var(--chinar-green-dark);text-decoration:underline;">Track it by Order ID</a> instead.</p>
+      <p style="color:var(--ink-soft);font-size:.85rem;">Enter the phone number you used at checkout to see every order placed with it — on any device, not just this browser.</p>
+
+      <form id="lookupForm" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+        <input type="tel" id="lookupPhone" placeholder="e.g. 03XX-XXXXXXX" required
+               style="flex:1;min-width:220px;padding:11px 14px;border:1px solid var(--line);border-radius:var(--radius-md);font-family:inherit;font-size:.9rem;" />
+        <button type="submit" class="btn btn-primary" id="lookupBtn">Find My Orders</button>
+      </form>
+      <p id="lookupMsg" style="color:var(--ink-soft);font-size:.8rem;margin-top:8px;"></p>
+
       <div id="ordersList" style="margin-top:24px;"></div>
+
+      <p style="color:var(--ink-soft);font-size:.8rem;margin-top:18px;">Know your Order ID already? <a href="track-order.html" style="color:var(--chinar-green-dark);text-decoration:underline;">Track it directly</a> instead.</p>
     </div>
   </section>
 </main>
@@ -39,68 +49,96 @@
 <script src="assets/js/partials.js"></script>
 <script src="assets/js/main.js"></script>
 <script>
-(async function initMyOrders() {
+(function initMyOrders() {
   const listEl = document.getElementById('ordersList');
-  let history = [];
-  try {
-    history = JSON.parse(localStorage.getItem('chinar_orders_v1')) || [];
-  } catch (e) {
-    history = [];
-  }
+  const form = document.getElementById('lookupForm');
+  const phoneInput = document.getElementById('lookupPhone');
+  const lookupBtn = document.getElementById('lookupBtn');
+  const msgEl = document.getElementById('lookupMsg');
 
-  if (history.length === 0) {
+  function emptyState(message) {
     listEl.innerHTML = `
       <div class="empty-state">
         ${ICONS.packageIcon}
-        <h3>No orders yet</h3>
-        <p class="lede center" style="margin:10px auto 24px;">Orders you place will show up here.</p>
+        <h3>No orders found</h3>
+        <p class="lede center" style="margin:10px auto 24px;">${message}</p>
         <a href="shop.html" class="btn btn-primary">Shop the Collection</a>
       </div>`;
-    return;
   }
 
-  listEl.innerHTML = history.map(h => `<div class="order-card" data-order-id="${h.orderId}" style="border:1px solid var(--line);border-radius:var(--radius-md);padding:16px 18px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-      <div>
-        <div style="font-weight:600;">${h.orderId}</div>
-        <div style="font-size:.78rem;color:var(--ink-soft);">${new Date(h.placedAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-        <div class="order-payment-badge" style="display:none;font-size:.78rem;padding:6px 12px;border-radius:20px;"></div>
-        <div class="order-status-badge" style="font-size:.8rem;padding:6px 12px;border-radius:20px;background:var(--sage-100);color:var(--chinar-green-dark);">Checking...</div>
-      </div>
-    </div>`).join('');
+  function renderOrders(orders) {
+    listEl.innerHTML = orders.map(o => `<div class="order-card" data-order-id="${o.orderId}" style="border:1px solid var(--line);border-radius:var(--radius-md);padding:16px 18px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;cursor:pointer;">
+        <div>
+          <div style="font-weight:600;">${o.orderId}</div>
+          <div style="font-size:.78rem;color:var(--ink-soft);">${new Date(o.placedAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          ${(o.payment === 'bank' || o.payment === 'wallet') ? `<div style="font-size:.78rem;padding:6px 12px;border-radius:20px;background:${o.paymentStatus === 'received' ? 'var(--sage-100)' : '#fbeecb'};color:${o.paymentStatus === 'received' ? 'var(--chinar-green-dark)' : '#8a5a00'};">${o.paymentStatus === 'received' ? 'Payment Received' : 'Payment Pending'}</div>` : ''}
+          <div style="font-size:.8rem;padding:6px 12px;border-radius:20px;background:var(--sage-100);color:var(--chinar-green-dark);">${o.currentStage}</div>
+        </div>
+      </div>`).join('');
 
-  // Fetch live status for each order and fill in the badges
-  history.forEach(async (h) => {
-    const card = listEl.querySelector(`[data-order-id="${CSS.escape(h.orderId)}"]`);
-    const badge = card.querySelector('.order-status-badge');
-    const paymentBadge = card.querySelector('.order-payment-badge');
-    try {
-      const res = await fetch(`/api/orders/${encodeURIComponent(h.orderId)}?phone=${encodeURIComponent(h.phone)}`);
-      const data = await res.json();
-      if (res.ok) {
-        badge.textContent = data.currentStage;
+    listEl.querySelectorAll('.order-card').forEach(card => {
+      const orderId = card.getAttribute('data-order-id');
+      card.addEventListener('click', () => {
+        location.href = `track-order.html?id=${encodeURIComponent(orderId)}&phone=${encodeURIComponent(phoneInput.value.trim())}`;
+      });
+    });
+  }
 
-        const paymentMethod = data.customer && data.customer.payment;
-        if (paymentMethod === 'bank' || paymentMethod === 'wallet') {
-          const received = data.paymentStatus === 'received';
-          paymentBadge.textContent = received ? 'Payment Received' : 'Payment Pending';
-          paymentBadge.style.background = received ? 'var(--sage-100)' : '#fbeecb';
-          paymentBadge.style.color = received ? 'var(--chinar-green-dark)' : '#8a5a00';
-          paymentBadge.style.display = 'inline-block';
-        }
-
-        card.style.cursor = 'pointer';
-        card.addEventListener('click', () => {
-          location.href = `track-order.html?id=${encodeURIComponent(h.orderId)}&phone=${encodeURIComponent(h.phone)}`;
-        });
-      } else {
-        badge.textContent = 'Unavailable';
-      }
-    } catch (e) {
-      badge.textContent = 'Unavailable';
+  // The real source of truth: ask the server for every order placed with
+  // this phone number, so orders show up no matter which device/browser
+  // the customer is currently using.
+  async function lookupByPhone(phone, { silent } = {}) {
+    if (!silent) {
+      lookupBtn.disabled = true;
+      lookupBtn.textContent = 'Searching...';
+      msgEl.textContent = '';
     }
+    try {
+      const res = await fetch(`/api/orders/lookup?phone=${encodeURIComponent(phone)}`);
+      const data = await res.json();
+      if (!res.ok) {
+        if (!silent) {
+          emptyState(data.error || "We couldn't find any orders for that phone number.");
+          msgEl.textContent = data.error || '';
+        }
+        return;
+      }
+      if (data.length === 0) {
+        emptyState("No orders found for that phone number. Double-check the number you used at checkout.");
+      } else {
+        renderOrders(data);
+      }
+      try { localStorage.setItem('chinar_last_phone', phone); } catch (e) { /* ignore */ }
+    } catch (e) {
+      if (!silent) {
+        emptyState("Couldn't reach the server to look up your orders. Please check your connection and try again.");
+      }
+    } finally {
+      lookupBtn.disabled = false;
+      lookupBtn.textContent = 'Find My Orders';
+    }
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const phone = phoneInput.value.trim();
+    if (phone) lookupByPhone(phone);
   });
+
+  // Convenience: if we remember the phone from a previous order on this
+  // browser, prefill it and auto-run the lookup. This is just a shortcut —
+  // the lookup itself always goes to the server, so it works everywhere.
+  let rememberedPhone = '';
+  try { rememberedPhone = localStorage.getItem('chinar_last_phone') || ''; } catch (e) { /* ignore */ }
+
+  if (rememberedPhone) {
+    phoneInput.value = rememberedPhone;
+    lookupByPhone(rememberedPhone, { silent: true });
+  } else {
+    emptyState("Enter your phone number above to find your orders.");
+  }
 })();
 </script>
 </body>

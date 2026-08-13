@@ -216,6 +216,46 @@ def list_orders():
     return jsonify(load_orders())
 
 
+@app.route("/api/orders/lookup", methods=["GET"])
+def lookup_orders_by_phone():
+    """
+    Customer-facing "find my orders" lookup, used by the My Orders page.
+    Unlike /api/orders (seller-only, needs the admin key), this returns a
+    trimmed-down list of every order placed with a given phone number, no
+    matter which browser/device the customer is currently using — so an
+    order placed on a laptop shows up when checked from a phone, etc.
+
+    Requires ?phone=... . We only match on phone (not e.g. order ID alone)
+    so a stranger can't page through this and see the whole order book.
+    """
+    phone = (request.args.get("phone") or "").strip()
+    digits = lambda s: "".join(ch for ch in s if ch.isdigit())
+    phone_digits = digits(phone)[-9:]
+
+    if not phone_digits or len(phone_digits) < 7:
+        return jsonify({"error": "Enter a valid phone number"}), 400
+
+    orders = load_orders()
+    matches = [
+        o for o in orders
+        if digits((o.get("customer", {}).get("phone") or ""))[-9:] == phone_digits
+    ]
+    matches.sort(key=lambda o: o.get("placedAt", ""), reverse=True)
+
+    return jsonify([
+        {
+            "orderId": o["orderId"],
+            "placedAt": o["placedAt"],
+            "total": o.get("total", 0),
+            "itemCount": len(o.get("items", [])),
+            "currentStage": o.get("status", ORDER_STAGES[0]),
+            "paymentStatus": o.get("paymentStatus", "not_applicable"),
+            "payment": o.get("customer", {}).get("payment"),
+        }
+        for o in matches
+    ])
+
+
 @app.route("/api/orders/<order_id>", methods=["GET"])
 def track_order(order_id):
     """

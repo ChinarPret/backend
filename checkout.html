@@ -239,12 +239,20 @@
 
     clearTimeout(slowNotice);
 
-    // 3. Save snapshot locally + add to this browser's order history
+    // 3. Save snapshot locally + add to this browser's order history.
+    // This local list is just a convenience cache for this browser — the
+    // My Orders page's real source of truth is the server-side phone
+    // lookup below, so orders also show up on other devices.
     localStorage.setItem('chinar_last_order', JSON.stringify(orderData));
     try {
       const history = JSON.parse(localStorage.getItem('chinar_orders_v1')) || [];
       history.unshift({ orderId, phone: orderData.customer.phone || '', placedAt: orderData.placedAt });
       localStorage.setItem('chinar_orders_v1', JSON.stringify(history));
+      // Remember the phone number so My Orders can auto-look-up orders on
+      // any device the customer later signs in from, without retyping it.
+      if (orderData.customer.phone) {
+        localStorage.setItem('chinar_last_phone', orderData.customer.phone);
+      }
     } catch (e) { /* localStorage unavailable — order is still saved on the server */ }
 
     // 4. Clear shopping cart
