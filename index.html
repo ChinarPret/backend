@@ -177,7 +177,7 @@
     const products = await loadProducts();
 
     // hero slider images
-    const heroImgs = [products[1], products[7], products[14], products[22]].filter(Boolean);
+    const heroImgs = [products[8], products[1], products[7], products[18]].filter(Boolean);
     document.getElementById('heroTrack').innerHTML = heroImgs.map(p => `<img src="${p.images[0]}" alt="${p.name}" />`).join('');
 
     // category tiles
