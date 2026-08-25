@@ -175,3 +175,134 @@ document.addEventListener("cart:updated", () => {
   updateCartCount();
   productsReadyPromise.then(renderCartDrawerContents);
 });
+
+/* ==========================================================
+   CHINAR — Scroll reveal + counter animations
+   Works across every page, including product/category cards
+   that get injected into the DOM after an async fetch.
+   ========================================================== */
+(function () {
+  const REVEAL_SELECTOR = [
+    ".section-head",
+    ".cat-card",
+    ".product-card",
+    ".story img",
+    ".story-copy",
+    ".testi-card",
+    ".newsletter",
+    ".value-list li",
+    ".stat-strip > div",
+    ".contact-info li",
+    ".page-hero h1",
+    ".page-hero p",
+    ".pdp-main-media",
+    ".pdp-info",
+    ".pdp-thumbs",
+    ".related-title",
+    ".pay-opt",
+    ".order-summary",
+  ].join(",");
+
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  let io;
+  if (!prefersReducedMotion && "IntersectionObserver" in window) {
+    io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.14, rootMargin: "0px 0px -40px 0px" }
+    );
+  }
+
+  function primeElement(el, i) {
+    if (el.dataset.revealBound) return;
+    el.dataset.revealBound = "1";
+    if (prefersReducedMotion) return;
+    el.classList.add("reveal");
+    el.style.transitionDelay = Math.min(i * 70, 420) + "ms";
+    if (io) io.observe(el);
+    else el.classList.add("in-view");
+  }
+
+  function scanAndBind(root) {
+    const groups = new Map();
+    root.querySelectorAll(REVEAL_SELECTOR).forEach((el) => {
+      if (el.dataset.revealBound) return;
+      const parent = el.parentElement || root;
+      if (!groups.has(parent)) groups.set(parent, []);
+      groups.get(parent).push(el);
+    });
+    groups.forEach((els) => els.forEach((el, i) => primeElement(el, i)));
+  }
+
+  function animateCounter(el) {
+    const raw = el.textContent.trim();
+    const match = raw.match(/^(\d+(\.\d+)?)/);
+    if (!match) return;
+    const end = parseFloat(match[1]);
+    const suffix = raw.slice(match[1].length);
+    const decimals = match[1].includes(".") ? match[1].split(".")[1].length : 0;
+    const duration = 1000;
+    const start = performance.now();
+    function tick(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = (end * eased).toFixed(decimals) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+      else el.textContent = raw;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function bindCounters(root) {
+    const nums = root.querySelectorAll(".hero-stats strong, .stat-strip strong");
+    nums.forEach((el) => {
+      if (el.dataset.countBound) return;
+      el.dataset.countBound = "1";
+      if (prefersReducedMotion || !("IntersectionObserver" in window)) return;
+      const cio = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              animateCounter(entry.target);
+              cio.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.4 }
+      );
+      cio.observe(el);
+    });
+  }
+
+  function init() {
+    scanAndBind(document);
+    bindCounters(document);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+  document.addEventListener("partials:ready", init);
+
+  // Catch product/category grids that render asynchronously after fetch
+  const mo = new MutationObserver((mutations) => {
+    let touched = false;
+    for (const m of mutations) {
+      if (m.addedNodes && m.addedNodes.length) { touched = true; break; }
+    }
+    if (touched) {
+      scanAndBind(document);
+      bindCounters(document);
+    }
+  });
+  mo.observe(document.body, { childList: true, subtree: true });
+})();
